@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.MasjidScreen" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@color/startup_background</item>
+    </style>
+
+    <style name="Theme.MasjidScreen.FullScreen" parent="Theme.MasjidScreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+</resources>

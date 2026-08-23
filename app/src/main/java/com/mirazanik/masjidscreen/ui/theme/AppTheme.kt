@@ -1,0 +1,213 @@
+package com.mirazanik.masjidscreen.ui.theme
+
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
+
+data class MosqueColors(
+    val backgroundDeep: Color,
+    val backgroundCard: Color,
+    val backgroundCardAlt: Color,
+    val screenTop: Color,
+    val screenBottom: Color,
+    val headerTop: Color,
+    val clockTop: Color,
+    val clockMid: Color,
+    val clockBoxBg: Color,
+    val sunStripBg: Color,
+    val sunStripEdge: Color,
+    val primary: Color,
+    val primaryLight: Color,
+    val primaryDim: Color,
+    val tableHeaderStart: Color,
+    val tableHeaderMid: Color,
+    val tableHeaderEnd: Color,
+    val textPrimary: Color,
+    val textSecondary: Color,
+    val textDim: Color,
+    val textOnPrimary: Color,
+    val highlightNext: Color,
+    val highlightBg: Color,
+    val divider: Color,
+    val tickerBg: Color,
+    val jamaatColor: Color,
+    val prohibitedColor: Color,
+    val networkOnline: Color,
+)
+
+private val NightNavyColors = MosqueColors(
+    backgroundDeep = Color(0xFF050D1A),
+    backgroundCard = Color(0xFF0D1B2A),
+    backgroundCardAlt = Color(0xFF0F2035),
+    screenTop = Color(0xFF081525),
+    screenBottom = Color(0xFF060D1B),
+    headerTop = Color(0xFF102233),
+    clockTop = Color(0xFF0D2035),
+    clockMid = Color(0xFF071828),
+    clockBoxBg = Color(0xFF091724),
+    sunStripBg = Color(0xFF0A1E30),
+    sunStripEdge = Color(0xFF0C1E30),
+    primary = Color(0xFFD4AF37),
+    primaryLight = Color(0xFFE8C96B),
+    primaryDim = Color(0xFF9A7B1A),
+    tableHeaderStart = Color(0xFF1E7A43),
+    tableHeaderMid = Color(0xFF1A6B3A),
+    tableHeaderEnd = Color(0xFF124D2B),
+    textPrimary = Color(0xFFF5F5F5),
+    textSecondary = Color(0xFFBBBBBB),
+    textDim = Color(0xFF777777),
+    textOnPrimary = Color(0xFF1A1200),
+    highlightNext = Color(0xFFFFD700),
+    highlightBg = Color(0xFF1A2E1A),
+    divider = Color(0xFF1E3A5F),
+    tickerBg = Color(0xFF0A1520),
+    jamaatColor = Color(0xFF4FC3F7),
+    prohibitedColor = Color(0xFFFF7043),
+    networkOnline = Color(0xFF2E9C57),
+)
+
+private val DeepEmeraldColors = MosqueColors(
+    backgroundDeep = Color(0xFF030E08),
+    backgroundCard = Color(0xFF07160D),
+    backgroundCardAlt = Color(0xFF0A1F12),
+    screenTop = Color(0xFF061410),
+    screenBottom = Color(0xFF020A05),
+    headerTop = Color(0xFF0D2018),
+    clockTop = Color(0xFF092018),
+    clockMid = Color(0xFF051510),
+    clockBoxBg = Color(0xFF061A12),
+    sunStripBg = Color(0xFF071A10),
+    sunStripEdge = Color(0xFF091E13),
+    primary = Color(0xFFE8C96B),
+    primaryLight = Color(0xFFF5DFA0),
+    primaryDim = Color(0xFFA08030),
+    tableHeaderStart = Color(0xFF1A7A3A),
+    tableHeaderMid = Color(0xFF166B30),
+    tableHeaderEnd = Color(0xFF0E4F22),
+    textPrimary = Color(0xFFF0F5F2),
+    textSecondary = Color(0xFFB8C8BC),
+    textDim = Color(0xFF6A8A72),
+    textOnPrimary = Color(0xFF1A1200),
+    highlightNext = Color(0xFFFFD700),
+    highlightBg = Color(0xFF0C2810),
+    divider = Color(0xFF1A4028),
+    tickerBg = Color(0xFF040D07),
+    jamaatColor = Color(0xFF80CBC4),
+    prohibitedColor = Color(0xFFFF7043),
+    networkOnline = Color(0xFF4CAF50),
+)
+
+private val RoyalAmethystColors = MosqueColors(
+    backgroundDeep = Color(0xFF0A0614),
+    backgroundCard = Color(0xFF120A24),
+    backgroundCardAlt = Color(0xFF180E2E),
+    screenTop = Color(0xFF0E0820),
+    screenBottom = Color(0xFF060310),
+    headerTop = Color(0xFF1A0E35),
+    clockTop = Color(0xFF150C30),
+    clockMid = Color(0xFF0D0720),
+    clockBoxBg = Color(0xFF100828),
+    sunStripBg = Color(0xFF0E0825),
+    sunStripEdge = Color(0xFF110A2A),
+    primary = Color(0xFFE8C96B),
+    primaryLight = Color(0xFFF5DFA0),
+    primaryDim = Color(0xFFA08030),
+    tableHeaderStart = Color(0xFF6A30C0),
+    tableHeaderMid = Color(0xFF5B28A8),
+    tableHeaderEnd = Color(0xFF3D1A70),
+    textPrimary = Color(0xFFF5F0FF),
+    textSecondary = Color(0xFFBBB0CC),
+    textDim = Color(0xFF7A6A90),
+    textOnPrimary = Color(0xFF1A1200),
+    highlightNext = Color(0xFFFFD700),
+    highlightBg = Color(0xFF1E0A40),
+    divider = Color(0xFF2A1A50),
+    tickerBg = Color(0xFF070412),
+    jamaatColor = Color(0xFFCE93D8),
+    prohibitedColor = Color(0xFFFF7043),
+    networkOnline = Color(0xFF66BB6A),
+)
+
+private val MidnightObsidianColors = MosqueColors(
+    backgroundDeep = Color(0xFF000000),
+    backgroundCard = Color(0xFF0A0A0A),
+    backgroundCardAlt = Color(0xFF111111),
+    screenTop = Color(0xFF0A0A0A),
+    screenBottom = Color(0xFF000000),
+    headerTop = Color(0xFF111111),
+    clockTop = Color(0xFF0D0D0D),
+    clockMid = Color(0xFF080808),
+    clockBoxBg = Color(0xFF050505),
+    sunStripBg = Color(0xFF060606),
+    sunStripEdge = Color(0xFF080808),
+    primary = Color(0xFFFFD700),
+    primaryLight = Color(0xFFFFE55C),
+    primaryDim = Color(0xFFB89B00),
+    tableHeaderStart = Color(0xFF004D40),
+    tableHeaderMid = Color(0xFF00695C),
+    tableHeaderEnd = Color(0xFF003330),
+    textPrimary = Color(0xFFF5F5F5),
+    textSecondary = Color(0xFFBBBBBB),
+    textDim = Color(0xFF777777),
+    textOnPrimary = Color(0xFF000000),
+    highlightNext = Color(0xFFFFD700),
+    highlightBg = Color(0xFF1A1400),
+    divider = Color(0xFF222222),
+    tickerBg = Color(0xFF050505),
+    jamaatColor = Color(0xFF00E5FF),
+    prohibitedColor = Color(0xFFFF5252),
+    networkOnline = Color(0xFF1DE9B6),
+)
+
+private val SlateAzureColors = MosqueColors(
+    backgroundDeep = Color(0xFF080C18),
+    backgroundCard = Color(0xFF101828),
+    backgroundCardAlt = Color(0xFF162035),
+    screenTop = Color(0xFF0C1020),
+    screenBottom = Color(0xFF060A14),
+    headerTop = Color(0xFF162030),
+    clockTop = Color(0xFF132230),
+    clockMid = Color(0xFF0A1520),
+    clockBoxBg = Color(0xFF0D1A28),
+    sunStripBg = Color(0xFF0C1828),
+    sunStripEdge = Color(0xFF0E1C2C),
+    primary = Color(0xFF90CAF9),
+    primaryLight = Color(0xFFBBDEFB),
+    primaryDim = Color(0xFF5A90C0),
+    tableHeaderStart = Color(0xFF1565C0),
+    tableHeaderMid = Color(0xFF1976D2),
+    tableHeaderEnd = Color(0xFF0D47A1),
+    textPrimary = Color(0xFFF0F5FF),
+    textSecondary = Color(0xFFB0C4DE),
+    textDim = Color(0xFF708090),
+    textOnPrimary = Color(0xFF001A3A),
+    highlightNext = Color(0xFFFFD740),
+    highlightBg = Color(0xFF1A1800),
+    divider = Color(0xFF1E2E45),
+    tickerBg = Color(0xFF060A14),
+    jamaatColor = Color(0xFF64FFDA),
+    prohibitedColor = Color(0xFFFF6E40),
+    networkOnline = Color(0xFF00E676),
+)
+
+enum class AppTheme(val key: String, val displayName: String) {
+    NIGHT_NAVY("night_navy", "Night Navy"),
+    DEEP_EMERALD("deep_emerald", "Deep Emerald"),
+    ROYAL_AMETHYST("royal_amethyst", "Royal Amethyst"),
+    MIDNIGHT_OBSIDIAN("midnight_obsidian", "Midnight Obsidian"),
+    SLATE_AZURE("slate_azure", "Slate Azure");
+
+    val colors: MosqueColors
+        get() = when (this) {
+            NIGHT_NAVY -> NightNavyColors
+            DEEP_EMERALD -> DeepEmeraldColors
+            ROYAL_AMETHYST -> RoyalAmethystColors
+            MIDNIGHT_OBSIDIAN -> MidnightObsidianColors
+            SLATE_AZURE -> SlateAzureColors
+        }
+
+    companion object {
+        fun fromKey(key: String) = entries.find { it.key == key } ?: NIGHT_NAVY
+    }
+}
+
+val LocalMosqueColors = staticCompositionLocalOf { NightNavyColors }

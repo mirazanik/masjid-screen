@@ -1,0 +1,48 @@
+# Build artifacts
+.gradle/
+build/
+/*/build/
+.claude/
+
+# Kotlin
+.kotlin/
+
+# IDE - IntelliJ / Android Studio
+.idea/
+*.iml
+*.iws
+out/
+
+# Local SDK path and signing (never commit)
+local.properties
+
+# Firebase — download from the console; keep only *.example in git
+**/google-services.json
+!**/google-services.json.example
+
+# Signing keys — keep copies only on your PC, not GitHub
+*.jks
+*.keystore
+*.p12
+*.pem
+
+# Log files
+*.log
+
+# Android Studio captures
+captures/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Misc
+*.swp
+*~
+.externalNativeBuild
+.cxx/

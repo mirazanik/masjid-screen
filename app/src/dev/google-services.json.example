@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "YOUR_DEV_PROJECT_NUMBER",
+    "project_id": "mosque-live-screen-dev",
+    "storage_bucket": "mosque-live-screen-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:YOUR_DEV_PROJECT_NUMBER:android:YOUR_APP_ID",
+        "android_client_info": {
+          "package_name": "com.mirazanik.masjidscreen.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "YOUR_DEV_API_KEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

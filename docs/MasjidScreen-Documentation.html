@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MasjidScreen — App Documentation</title>
+<style>
+  /* ── Print / PDF settings ── */
+  @page {
+    size: A4;
+    margin: 18mm 15mm;
+  }
+  @media print {
+    .no-print { display: none !important; }
+    .page-break { page-break-before: always; }
+    body { background: white !important; }
+    .cover { background: linear-gradient(135deg, #0a0f1e 0%, #1a2540 100%) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .screen-mock { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .badge, .highlight, .gold, .green-text, .cyan-text { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* ── Base ── */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11pt;
+    color: #1a1a2e;
+    line-height: 1.6;
+    background: #f5f5f0;
+  }
+  h1 { font-size: 28pt; }
+  h2 { font-size: 17pt; color: #0a1628; border-bottom: 2px solid #C9A84C; padding-bottom: 6px; margin: 24px 0 14px; }
+  h3 { font-size: 13pt; color: #1a2540; margin: 18px 0 8px; }
+  h4 { font-size: 11pt; color: #2a3a60; margin: 12px 0 6px; }
+  p { margin: 0 0 10px; }
+  ul, ol { margin: 0 0 10px 20px; }
+  li { margin-bottom: 4px; }
+  .gold { color: #C9A84C; }
+  .green-text { color: #4CAF50; }
+  .cyan-text { color: #00BCD4; }
+  .red-text { color: #e53935; }
+  strong { font-weight: 700; }
+  code {
+    background: #eef0f5;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-size: 9.5pt;
+    font-family: 'Consolas', monospace;
+  }
+
+  /* ── Sections ── */
+  .section { max-width: 900px; margin: 0 auto; padding: 20px 24px; }
+  .section-alt { background: #fff; }
+  .page-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── Cover Page ── */
+  .cover {
+    background: linear-gradient(135deg, #0a0f1e 0%, #1a2540 100%);
+    color: #fff;
+    padding: 80px 60px 60px;
+    min-height: 297mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .cover-icon {
+    width: 72px; height: 72px;
+    background: #C9A84C;
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin-bottom: 32px;
+  }
+  .cover h1 { color: #C9A84C; font-size: 36pt; line-height: 1.1; }
+  .cover .subtitle { font-size: 16pt; color: #a0b0c8; margin: 12px 0 40px; }
+  .cover-divider { width: 80px; height: 3px; background: #C9A84C; margin: 20px 0; }
+  .cover-meta { color: #8090aa; font-size: 10pt; margin-top: 60px; }
+  .cover-meta p { margin: 4px 0; color: #a0b0c8; }
+  .cover-meta strong { color: #C9A84C; }
+  .cover-tags { display: flex; gap: 10px; flex-wrap: wrap; margin: 30px 0; }
+  .tag {
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.4);
+    color: #C9A84C;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 9.5pt;
+  }
+
+  /* ── Table of Contents ── */
+  .toc { background: #fff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px 28px; margin: 24px 0; }
+  .toc h3 { margin-top: 0; color: #1a2540; }
+  .toc ol { margin-left: 18px; }
+  .toc li { padding: 3px 0; border-bottom: 1px dotted #ddd; }
+  .toc li:last-child { border-bottom: none; }
+  .toc a { color: #1a2540; text-decoration: none; }
+
+  /* ── Feature Cards ── */
+  .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .feature-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-top: 3px solid #C9A84C;
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .feature-card h4 { color: #C9A84C; margin-top: 0; font-size: 10.5pt; }
+  .feature-card ul { font-size: 9.5pt; margin-left: 16px; }
+  .feature-card-full {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-top: 3px solid #4CAF50;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 14px 0;
+  }
+  .feature-card-full h4 { color: #2e7d32; margin-top: 0; }
+
+  /* ── Screen Mockups ── */
+  .mockup-container { margin: 20px 0; }
+  .mockup-label {
+    background: #1a2540;
+    color: #C9A84C;
+    font-size: 8.5pt;
+    font-weight: bold;
+    padding: 4px 12px;
+    display: inline-block;
+    border-radius: 4px 4px 0 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Display Screen Mockup */
+  .display-mock {
+    background: #0a0f1e;
+    border: 2px solid #1e3a5f;
+    border-radius: 0 8px 8px 8px;
+    overflow: hidden;
+    font-family: 'Consolas', monospace;
+  }
+  .display-header {
+    background: #0d1a33;
+    border-bottom: 1px solid #1e3a5f;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .display-header .hijri { color: #C9A84C; font-size: 9pt; font-weight: bold; }
+  .display-header .mosque-name { color: #ffffff; font-size: 13pt; font-weight: bold; text-align: center; flex: 1; letter-spacing: 1px; }
+  .display-header .date { color: #a0b0c8; font-size: 9pt; text-align: right; }
+  .display-header .offline-badge {
+    background: #e53935;
+    color: #fff;
+    font-size: 7pt;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+  }
+  .display-body { display: flex; min-height: 200px; }
+  .display-left {
+    width: 38%;
+    border-right: 1px solid #1e3a5f;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .clock-main { color: #C9A84C; font-size: 28pt; font-weight: bold; letter-spacing: 3px; line-height: 1; }
+  .clock-sub { color: #8090aa; font-size: 9pt; margin-top: 4px; }
+  .sun-row { display: flex; gap: 20px; margin-top: 10px; }
+  .sun-item { color: #ffb74d; font-size: 8.5pt; text-align: center; }
+  .sun-item span { display: block; color: #a0b0c8; font-size: 7.5pt; }
+  .next-prayer {
+    margin-top: 14px;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 8px;
+    padding: 8px 16px;
+    text-align: center;
+  }
+  .next-prayer .label { color: #8090aa; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 1px; }
+  .next-prayer .name { color: #C9A84C; font-size: 12pt; font-weight: bold; }
+  .next-prayer .countdown { color: #4CAF50; font-size: 9pt; margin-top: 2px; }
+  .display-right { flex: 1; padding: 8px; }
+  .prayer-table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+  .prayer-table th {
+    color: #8090aa;
+    text-transform: uppercase;
+    font-size: 7pt;
+    letter-spacing: 1px;
+    padding: 6px 8px;
+    border-bottom: 1px solid #1e3a5f;
+    text-align: left;
+  }
+  .prayer-table td { padding: 7px 8px; border-bottom: 1px solid #0f1e35; }
+  .prayer-table tr.current td { background: rgba(201,168,76,0.15); }
+  .prayer-table tr.current td:first-child { border-left: 3px solid #C9A84C; color: #C9A84C; font-weight: bold; }
+  .prayer-table tr.next-p td { background: rgba(76,175,80,0.1); }
+  .prayer-table tr.next-p td:first-child { border-left: 3px solid #4CAF50; color: #4CAF50; font-weight: bold; }
+  .prayer-table .prayer-name { color: #e0e8f0; }
+  .prayer-table .arabic { color: #8090aa; font-size: 7pt; }
+  .prayer-table .waqt { color: #a0b0c8; }
+  .prayer-table .jamaat-time { color: #00BCD4; font-weight: bold; }
+  .prayer-table .note { color: #6070a0; font-size: 7pt; }
+  .display-footer { background: #090d1a; border-top: 1px solid #1e3a5f; padding: 10px 16px; }
+  .hadith-card { margin-bottom: 8px; }
+  .hadith-card .hadith-label { color: #C9A84C; font-size: 7.5pt; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .hadith-card .hadith-text { color: #c8d8e8; font-size: 8.5pt; font-style: italic; }
+  .hadith-card .hadith-source { color: #6070a0; font-size: 7.5pt; margin-top: 3px; }
+  .notice-ticker {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 4px;
+    padding: 5px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .notice-ticker .notice-icon { color: #C9A84C; font-size: 9pt; }
+  .notice-ticker .notice-text { color: #a0b8d0; font-size: 8pt; }
+
+  /* Overlay Banners */
+  .overlay-mock {
+    position: relative;
+    margin: 12px 0;
+  }
+  .jamaat-banner {
+    background: rgba(76,175,80,0.9);
+    border-radius: 6px;
+    padding: 10px 20px;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 11pt;
+  }
+  .makrooh-banner {
+    background: rgba(229,57,53,0.9);
+    border-radius: 6px;
+    padding: 10px 20px;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 11pt;
+  }
+
+  /* Admin Screens */
+  .admin-mock {
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 0 8px 8px 8px;
+    overflow: hidden;
+    max-width: 380px;
+  }
+  .admin-header {
+    background: #1a2540;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .admin-header .back { color: #C9A84C; font-size: 14pt; }
+  .admin-header .title { color: #fff; font-weight: bold; font-size: 11pt; }
+  .admin-tabs { display: flex; background: #f5f5f0; border-bottom: 1px solid #e0e0e0; }
+  .admin-tab {
+    flex: 1;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 8pt;
+    color: #888;
+    border-bottom: 2px solid transparent;
+  }
+  .admin-tab.active { color: #C9A84C; border-bottom-color: #C9A84C; font-weight: bold; }
+  .admin-body { padding: 14px 16px; }
+  .admin-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .admin-row:last-child { border-bottom: none; }
+  .admin-row .prayer-lbl { font-weight: bold; font-size: 9.5pt; color: #1a2540; }
+  .admin-row .arabic-lbl { font-size: 8pt; color: #888; }
+  .admin-row .time-input {
+    background: #f5f7ff;
+    border: 1px solid #c0cce0;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 10pt;
+    color: #1a2540;
+    font-family: monospace;
+    width: 70px;
+    text-align: center;
+  }
+  .admin-row .note-input {
+    background: #f5f7ff;
+    border: 1px solid #c0cce0;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 8.5pt;
+    color: #555;
+    width: 100px;
+  }
+  .login-mock {
+    background: #0a0f1e;
+    border: 2px solid #1e3a5f;
+    border-radius: 0 8px 8px 8px;
+    padding: 40px 30px;
+    max-width: 340px;
+    text-align: center;
+  }
+  .login-mock .app-logo { color: #C9A84C; font-size: 24pt; font-weight: bold; margin-bottom: 8px; }
+  .login-mock .app-sub { color: #8090aa; font-size: 9pt; margin-bottom: 24px; }
+  .login-field {
+    background: #0d1a33;
+    border: 1px solid #1e3a5f;
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: #a0b0c8;
+    font-size: 9.5pt;
+    margin-bottom: 10px;
+    text-align: left;
+    width: 100%;
+  }
+  .login-btn {
+    background: #C9A84C;
+    color: #0a0f1e;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 10px 0;
+    width: 100%;
+    font-size: 10pt;
+    margin-top: 6px;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Hadith mock */
+  .hadith-item {
+    background: #f9f9f9;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .hadith-item .toggle { font-size: 16pt; line-height: 1; }
+  .hadith-item .hd-text { font-size: 8.5pt; color: #333; flex: 1; }
+  .hadith-item .hd-source { font-size: 7.5pt; color: #888; margin-top: 3px; }
+  .hadith-item .hd-active { color: #4CAF50; }
+  .hadith-item .hd-inactive { color: #ccc; }
+
+  /* Settings mock */
+  .settings-group { margin-bottom: 16px; }
+  .settings-group-label { font-size: 7.5pt; color: #C9A84C; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 6px; }
+  .settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .settings-row .lbl { font-size: 9pt; color: #333; }
+  .settings-row .val { font-size: 9pt; color: #666; font-style: italic; }
+  .settings-row .val-chip {
+    background: #e8f0fe;
+    color: #1a2540;
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 8pt;
+    font-weight: bold;
+  }
+
+  /* Tables */
+  .doc-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 9.5pt; }
+  .doc-table th { background: #1a2540; color: #C9A84C; padding: 8px 12px; text-align: left; font-size: 9pt; }
+  .doc-table td { padding: 8px 12px; border-bottom: 1px solid #e8e8e8; vertical-align: top; }
+  .doc-table tr:nth-child(even) td { background: #f9f9f9; }
+  .doc-table tr:hover td { background: #f0f4ff; }
+
+  /* Info boxes */
+  .info-box {
+    background: #e8f4fd;
+    border-left: 4px solid #1976D2;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 9.5pt;
+  }
+  .warn-box {
+    background: #fff8e1;
+    border-left: 4px solid #F9A825;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 9.5pt;
+  }
+
+  /* Architecture diagram */
+  .arch-diagram {
+    background: #0a0f1e;
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-family: 'Consolas', monospace;
+    font-size: 8.5pt;
+    color: #a0b8d0;
+    margin: 16px 0;
+    white-space: pre;
+    line-height: 1.7;
+  }
+  .arch-diagram .arch-gold { color: #C9A84C; }
+  .arch-diagram .arch-green { color: #4CAF50; }
+  .arch-diagram .arch-blue { color: #42a5f5; }
+  .arch-diagram .arch-cyan { color: #00BCD4; }
+
+  /* Tech stack badges */
+  .tech-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .tech-badge {
+    background: #1a2540;
+    color: #C9A84C;
+    border: 1px solid #C9A84C;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 8.5pt;
+    font-weight: bold;
+  }
+  .tech-badge-blue {
+    background: #0d1a33;
+    color: #42a5f5;
+    border: 1px solid #42a5f5;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 8.5pt;
+    font-weight: bold;
+  }
+  .tech-badge-green {
+    background: #0a1a0a;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 8.5pt;
+    font-weight: bold;
+  }
+
+  /* Flow arrow */
+  .flow-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0;
+    font-size: 9.5pt;
+  }
+  .flow-step .step-box {
+    background: #1a2540;
+    color: #fff;
+    border-radius: 4px;
+    padding: 4px 12px;
+    white-space: nowrap;
+  }
+  .flow-step .arrow { color: #C9A84C; font-size: 12pt; }
+
+  /* Notice mock */
+  .notice-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    margin-bottom: 6px;
+  }
+  .notice-item .n-priority {
+    background: #1a2540;
+    color: #C9A84C;
+    font-size: 8pt;
+    font-weight: bold;
+    padding: 2px 7px;
+    border-radius: 12px;
+  }
+  .notice-item .n-text { font-size: 9pt; flex: 1; color: #333; }
+  .notice-item .n-toggle { font-size: 13pt; }
+  .notice-item .n-on { color: #4CAF50; }
+  .notice-item .n-off { color: #ccc; }
+
+  /* Print button */
+  .print-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #C9A84C;
+    color: #0a0f1e;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 11pt;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .print-btn:hover { background: #b8973a; }
+
+  /* Dual column layouts */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .col-60-40 { display: grid; grid-template-columns: 60% 40%; gap: 24px; align-items: start; }
+  .col-40-60 { display: grid; grid-template-columns: 40% 60%; gap: 24px; align-items: start; }
+
+  /* Page number area */
+  .page-footer { color: #aaa; font-size: 8pt; text-align: center; padding: 16px 0 0; }
+
+  /* Separator */
+  hr.section-sep { border: none; border-top: 1px solid #ddd; margin: 30px 0; }
+</style>
+</head>
+<body>
+
+<!-- Print Button (visible on screen only) -->
+<button class="print-btn no-print" onclick="window.print()">⬇ Save as PDF</button>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- COVER PAGE                                     -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-icon">🕌</div>
+  <h1>MasjidScreen</h1>
+  <p class="subtitle">Mosque Live Display — Complete App Documentation</p>
+  <div class="cover-divider"></div>
+
+  <p style="color:#a0b0c8; font-size:10pt; max-width:500px; line-height:1.7;">
+    A real-time mosque information display application for Android TV and large-screen displays.
+    Shows prayer times, jamaat schedules, Islamic dates, hadiths, and scrolling announcements —
+    all managed remotely via a secure admin panel.
+  </p>
+
+  <div class="cover-tags">
+    <span class="tag">Kotlin</span>
+    <span class="tag">Jetpack Compose</span>
+    <span class="tag">Firebase Firestore</span>
+    <span class="tag">Firebase Auth</span>
+    <span class="tag">Room DB</span>
+    <span class="tag">Adhan Library</span>
+    <span class="tag">Android TV</span>
+    <span class="tag">Material 3</span>
+  </div>
+
+  <div class="cover-meta">
+    <p><strong>App ID:</strong> com.mirazanik.masjidscreen</p>
+    <p><strong>Min SDK:</strong> API 26 (Android 8.0) &nbsp;·&nbsp; <strong>Target SDK:</strong> API 35 (Android 15)</p>
+    <p><strong>Architecture:</strong> MVVM + Repository Pattern</p>
+    <p><strong>Version:</strong> 1.0 &nbsp;·&nbsp; <strong>Date:</strong> June 2026</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- TABLE OF CONTENTS                              -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" style="padding-top: 30px;">
+  <h2>Table of Contents</h2>
+  <div class="toc">
+    <ol>
+      <li><a href="#overview">App Overview &amp; Purpose</a></li>
+      <li><a href="#display-screen">Display Screen — Layout &amp; Sections</a></li>
+      <li><a href="#prayer-table">Prayer Times Table</a></li>
+      <li><a href="#overlays">Smart Overlays (Jamaat Countdown &amp; Makrooh Warning)</a></li>
+      <li><a href="#hadith">Hadith Card &amp; Notice Ticker</a></li>
+      <li><a href="#admin-login">Admin Panel — Login</a></li>
+      <li><a href="#admin-jamaat">Admin — Jamaat Times</a></li>
+      <li><a href="#admin-hadith">Admin — Hadith Management</a></li>
+      <li><a href="#admin-notices">Admin — Notices</a></li>
+      <li><a href="#admin-settings">Admin — Settings</a></li>
+      <li><a href="#prayer-calc">Prayer Calculation Engine</a></li>
+      <li><a href="#offline">Offline Mode &amp; Data Sync</a></li>
+      <li><a href="#ota">Over-the-Air (OTA) Updates</a></li>
+      <li><a href="#localization">Localization (English &amp; Bengali)</a></li>
+      <li><a href="#architecture">Architecture &amp; Data Flow</a></li>
+      <li><a href="#tech-stack">Tech Stack Reference</a></li>
+      <li><a href="#feature-list">Complete Feature List</a></li>
+    </ol>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 1. APP OVERVIEW                               -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="overview">
+  <h2>1. App Overview &amp; Purpose</h2>
+
+  <p>
+    <strong>MasjidScreen</strong> is a fullscreen, landscape-mode Android application designed to run permanently
+    on a TV or large monitor mounted inside a mosque. It serves as a real-time information hub for
+    congregants, showing all prayer-related information without any user interaction needed on the display device.
+  </p>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h4>🕌 Display Device (TV / Monitor)</h4>
+      <ul>
+        <li>Runs fullscreen, landscape, screen-always-on</li>
+        <li>Shows live prayer times, clock, Hijri date</li>
+        <li>Auto-updates from Firebase in real time</li>
+        <li>Works offline (cached data + local prayer calc)</li>
+        <li>Hidden admin trigger via header swipe/tap</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>🔐 Admin Panel (Password Protected)</h4>
+      <ul>
+        <li>Firebase Auth — email/password login</li>
+        <li>Set/edit jamaat (congregation) times</li>
+        <li>Manage hadiths and notices</li>
+        <li>Configure mosque info and location</li>
+        <li>Push OTA app updates</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>🌐 Cloud Sync</h4>
+      <ul>
+        <li>Firebase Firestore as backend database</li>
+        <li>Real-time listeners — changes reflect instantly</li>
+        <li>Multiple mosques supported via document IDs</li>
+        <li>Admin writes → Firestore → Room → Display</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>📡 Local-First Architecture</h4>
+      <ul>
+        <li>Room SQLite caches all cloud data locally</li>
+        <li>Prayer times calculated on-device (no API)</li>
+        <li>Clock synced via NTP (accurate time)</li>
+        <li>Offline badge shown when disconnected</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 2. DISPLAY SCREEN                             -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="display-screen">
+  <h2>2. Display Screen — Layout &amp; Sections</h2>
+  <p>The main display is divided into three horizontal bands:</p>
+
+  <div class="mockup-container">
+    <div class="mockup-label">📺 Display Screen — TV / Large Monitor (Landscape Fullscreen)</div>
+    <div class="display-mock">
+
+      <!-- Header -->
+      <div class="display-header">
+        <div class="hijri">١٤ رَمَضَان ١٤٤٦هـ &nbsp; ১৪ রমজান ১৪৪৬হি</div>
+        <div class="mosque-name">MASJID AL-NOOR</div>
+        <div class="date">Sunday, 01 June 2026 <span class="offline-badge">OFFLINE</span></div>
+      </div>
+
+      <!-- Body -->
+      <div class="display-body">
+
+        <!-- Left Panel -->
+        <div class="display-left">
+          <div class="clock-main">17:34:22</div>
+          <div class="clock-sub">Bangladesh Standard Time (UTC+6)</div>
+          <div class="sun-row">
+            <div class="sun-item">☀️ 06:18<span>Sunrise</span></div>
+            <div class="sun-item">🌇 20:44<span>Sunset</span></div>
+          </div>
+          <div class="next-prayer">
+            <div class="label">Next Prayer</div>
+            <div class="name">Maghrib</div>
+            <div class="countdown">in 23 minutes</div>
+          </div>
+        </div>
+
+        <!-- Right Panel — Prayer Table -->
+        <div class="display-right">
+          <table class="prayer-table">
+            <tr>
+              <th>Prayer</th>
+              <th>Waqt Start</th>
+              <th>Waqt End</th>
+              <th>Jamaat</th>
+              <th>Note</th>
+            </tr>
+            <tr class="current">
+              <td><span class="prayer-name">Asr</span><br><span class="arabic">العصر</span></td>
+              <td class="waqt">15:42</td>
+              <td class="waqt">20:29</td>
+              <td class="jamaat-time">16:00</td>
+              <td class="note">Winter: 15:45</td>
+            </tr>
+            <tr class="next-p">
+              <td><span class="prayer-name">Maghrib</span><br><span class="arabic">المغرب</span></td>
+              <td class="waqt">20:44</td>
+              <td class="waqt">22:05</td>
+              <td class="jamaat-time">auto</td>
+              <td class="note"></td>
+            </tr>
+            <tr>
+              <td><span class="prayer-name">Isha</span><br><span class="arabic">العشاء</span></td>
+              <td class="waqt">22:10</td>
+              <td class="waqt">04:51</td>
+              <td class="jamaat-time">22:30</td>
+              <td class="note"></td>
+            </tr>
+            <tr>
+              <td><span class="prayer-name">Fajr</span><br><span class="arabic">الفجر</span></td>
+              <td class="waqt">04:52</td>
+              <td class="waqt">06:18</td>
+              <td class="jamaat-time">05:15</td>
+              <td class="note"></td>
+            </tr>
+            <tr>
+              <td><span class="prayer-name">Dhuhr</span><br><span class="arabic">الظهر</span></td>
+              <td class="waqt">13:02</td>
+              <td class="waqt">15:42</td>
+              <td class="jamaat-time">13:15</td>
+              <td class="note">Fri: Jumu'ah</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="display-footer">
+        <div class="hadith-card">
+          <div class="hadith-label">📖 Hadith of the Day</div>
+          <div class="hadith-text">"The best of you is the one who learns the Quran and teaches it."</div>
+          <div class="hadith-source">— Sahih al-Bukhari &nbsp;•&nbsp; Narrated by Uthman ibn Affan (RA)</div>
+        </div>
+        <div class="notice-ticker">
+          <span class="notice-icon">📢</span>
+          <span class="notice-text">✦ Ramadan Tarawih prayers at 10:30 PM — All brothers are welcome ✦ Quran Tajweed class every Saturday 8:00 PM ✦ Masjid annual fundraiser coming soon ✦</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="feature-grid" style="margin-top: 20px;">
+    <div class="feature-card">
+      <h4>📅 Header Section (top)</h4>
+      <ul>
+        <li>Mosque name (large, centered)</li>
+        <li>Hijri date (Arabic &amp; Bengali numerals)</li>
+        <li>Gregorian date and day of week</li>
+        <li>Network offline badge (shown when disconnected)</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>🕐 Left Panel — Clock &amp; Prayer Info</h4>
+      <ul>
+        <li>Live digital clock (HH:MM:SS, updates every second)</li>
+        <li>NTP-synced Bangladesh Standard Time (UTC+6)</li>
+        <li>Sunrise and sunset times with icons</li>
+        <li>Next prayer name and countdown in minutes</li>
+        <li>Current prayer highlighted (gold)</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>🙏 Right Panel — Prayer Table</h4>
+      <ul>
+        <li>5 prayers: Fajr, Dhuhr, Asr, Maghrib, Isha</li>
+        <li>Waqt start and end times auto-calculated</li>
+        <li>Jamaat time set by admin</li>
+        <li>Optional notes per prayer</li>
+        <li>Color-coded rows (current=gold, next=green)</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>📋 Footer Section (bottom)</h4>
+      <ul>
+        <li>Rotating Hadith card with source and narrator</li>
+        <li>Scrolling notice ticker (infinite animation)</li>
+        <li>Notices separated by decorative characters</li>
+        <li>Multiple notices cycle via priority order</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 3. PRAYER TIMES TABLE DETAIL                  -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="prayer-table">
+  <h2>3. Prayer Times Table</h2>
+
+  <p>The prayer table shows all five daily prayers with color-coded rows to indicate the current and upcoming prayer at a glance.</p>
+
+  <table class="doc-table">
+    <tr>
+      <th>Column</th>
+      <th>Content</th>
+      <th>Details</th>
+    </tr>
+    <tr>
+      <td><strong>Prayer</strong></td>
+      <td>Prayer name + Arabic name</td>
+      <td>Fajr/الفجر, Dhuhr/الظهر, Asr/العصر, Maghrib/المغرب, Isha/العشاء. Friday Dhuhr shows "Jumu'ah"</td>
+    </tr>
+    <tr>
+      <td><strong>Waqt Start</strong></td>
+      <td>Prayer start time</td>
+      <td>Auto-calculated by Adhan library from GPS coordinates + calculation method</td>
+    </tr>
+    <tr>
+      <td><strong>Waqt End</strong></td>
+      <td>Prayer end time</td>
+      <td>= Next prayer's start time (Fajr ends at Sunrise)</td>
+    </tr>
+    <tr>
+      <td><strong>Jamaat</strong></td>
+      <td>Congregation time</td>
+      <td>Set manually by admin. Maghrib can be set to "auto" = uses actual sunset time. Shown in cyan.</td>
+    </tr>
+    <tr>
+      <td><strong>Note</strong></td>
+      <td>Optional free text</td>
+      <td>E.g., "Winter: 06:00", "Jumu'ah 1:15 PM". Set per-prayer by admin.</td>
+    </tr>
+  </table>
+
+  <h3>Row Color Coding</h3>
+  <table class="doc-table">
+    <tr>
+      <th>State</th>
+      <th>Color</th>
+      <th>Meaning</th>
+    </tr>
+    <tr>
+      <td>Current prayer</td>
+      <td style="color:#C9A84C; font-weight:bold;">■ Gold</td>
+      <td>Prayer whose waqt window is now active</td>
+    </tr>
+    <tr>
+      <td>Next prayer</td>
+      <td style="color:#4CAF50; font-weight:bold;">■ Green</td>
+      <td>The upcoming prayer</td>
+    </tr>
+    <tr>
+      <td>Jamaat time</td>
+      <td style="color:#00BCD4; font-weight:bold;">■ Cyan</td>
+      <td>All jamaat times displayed in this color</td>
+    </tr>
+    <tr>
+      <td>Other prayers</td>
+      <td style="color:#666; font-weight:bold;">■ Muted</td>
+      <td>Already completed or far future prayers</td>
+    </tr>
+    <tr>
+      <td>Sunrise (in table)</td>
+      <td style="color:#ffb74d; font-weight:bold;">■ Amber</td>
+      <td>Sunrise row shown for reference (no jamaat)</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 4. OVERLAYS                                   -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="overlays">
+  <h2>4. Smart Overlays</h2>
+  <p>Two special full-width overlay banners appear automatically based on time conditions:</p>
+
+  <div class="two-col">
+    <div>
+      <h3>Jamaat Countdown Banner</h3>
+      <div class="mockup-container">
+        <div class="mockup-label">Overlay — shown over display</div>
+        <div class="display-mock" style="padding: 20px;">
+          <div class="jamaat-banner">
+            🕌 &nbsp; Maghrib Jamaat starting in &nbsp; 04:38
+          </div>
+        </div>
+      </div>
+      <ul style="margin-top: 12px;">
+        <li>Appears when jamaat time is within the configured countdown minutes</li>
+        <li>Shows prayer name + MM:SS countdown</li>
+        <li>Configurable: admin sets how many minutes before jamaat to trigger</li>
+        <li>Green background for clear visibility</li>
+        <li>Automatically disappears once jamaat time passes</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Prohibited Time Warning</h3>
+      <div class="mockup-container">
+        <div class="mockup-label">Overlay — Makrooh time active</div>
+        <div class="display-mock" style="padding: 20px;">
+          <div class="makrooh-banner">
+            ⚠️ &nbsp; Nafl Salah not permitted until 06:38
+          </div>
+        </div>
+      </div>
+      <ul style="margin-top: 12px;">
+        <li>Displays during three makrooh (prohibited) prayer windows</li>
+        <li>Shows the time when prohibited period ends</li>
+        <li>Red background for clear warning</li>
+      </ul>
+      <table class="doc-table" style="margin-top: 10px;">
+        <tr><th>Period</th><th>Window</th></tr>
+        <tr><td>Ishraq</td><td>Fajr time → Fajr + 20 min</td></tr>
+        <tr><td>Zawal</td><td>Dhuhr − 5 min → Dhuhr time</td></tr>
+        <tr><td>Makrooh (Sunset)</td><td>Maghrib − 15 min → Maghrib time</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 5. HADITH & NOTICES                           -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="hadith">
+  <h2>5. Hadith Card &amp; Notice Ticker</h2>
+
+  <div class="two-col">
+    <div>
+      <h3>Hadith Card</h3>
+      <div class="display-mock" style="padding: 16px;">
+        <div class="hadith-card">
+          <div class="hadith-label">📖 Hadith of the Day</div>
+          <div class="hadith-text">"Actions are judged by intentions, and every person will get the reward according to what they intended."</div>
+          <div class="hadith-source">— Sahih al-Bukhari &amp; Sahih Muslim &nbsp;•&nbsp; Narrated by Umar ibn al-Khattab (RA)</div>
+        </div>
+      </div>
+      <ul style="margin-top: 12px;">
+        <li>Displays one hadith at a time from the active hadiths pool</li>
+        <li>Auto-rotates at an admin-configured interval (seconds)</li>
+        <li>Shows: Translation text, Source (book name), Narrator</li>
+        <li>Inactive hadiths are skipped in rotation</li>
+        <li>Admin can add unlimited hadiths</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Notice Ticker (Scrolling)</h3>
+      <div class="display-mock" style="padding: 16px;">
+        <div class="notice-ticker" style="overflow: hidden;">
+          <span class="notice-icon">📢</span>
+          <span class="notice-text">✦ Ramadan Tarawih 10:30 PM — All welcome ✦ Tajweed class Saturday 8:00 PM ✦ Annual fundraiser coming soon ✦</span>
+        </div>
+      </div>
+      <ul style="margin-top: 12px;">
+        <li>Infinite horizontal scrolling animation</li>
+        <li>All active notices concatenated in priority order</li>
+        <li>Notices separated by decorative ✦ characters</li>
+        <li>Admin can add, edit, delete, activate/deactivate notices</li>
+        <li>Priority number controls display order (lower = first)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 6. ADMIN LOGIN                                -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="admin-login">
+  <h2>6. Admin Panel — Login</h2>
+
+  <div class="col-40-60">
+    <div>
+      <div class="mockup-container">
+        <div class="mockup-label">Admin Login Screen (Portrait)</div>
+        <div class="login-mock">
+          <div class="app-logo">🕌 MasjidScreen</div>
+          <div class="app-sub">Admin Panel — Secure Access</div>
+          <div class="login-field">✉️ &nbsp; admin@mosque.org</div>
+          <div class="login-field">🔒 &nbsp; ••••••••••</div>
+          <button class="login-btn">Sign In</button>
+          <p style="color:#6070a0; font-size:7.5pt; margin-top:14px;">Protected by Firebase Authentication.<br>Contact mosque tech admin for access.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>How to Access Admin Panel</h3>
+      <ol>
+        <li>On the display screen, <strong>swipe or long-tap the header area</strong> (mosque name / date row)</li>
+        <li>App switches to <strong>portrait orientation</strong> and shows the Login screen</li>
+        <li>Enter admin <strong>email and password</strong> (Firebase Auth credentials)</li>
+        <li>On successful login, the <strong>Admin Dashboard</strong> opens with 4 tabs</li>
+        <li>Tap the back/exit button to return to display screen (orientation switches back to landscape)</li>
+      </ol>
+
+      <h3>Security</h3>
+      <ul>
+        <li>Firebase Authentication — email/password</li>
+        <li>Firestore rules require <code>request.auth != null</code> for all writes</li>
+        <li>Display screen only reads data — no write access without auth</li>
+        <li>Admin session persists until explicitly signed out</li>
+      </ul>
+
+      <div class="info-box">
+        <strong>Note:</strong> The admin trigger on the display is intentionally subtle — a deliberate swipe gesture on the header. This prevents accidental admin mode entry while the display is in public view.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 7. ADMIN — JAMAAT TIMES                       -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="admin-jamaat">
+  <h2>7. Admin — Jamaat Times</h2>
+
+  <div class="col-40-60">
+    <div>
+      <div class="mockup-container">
+        <div class="mockup-label">Admin Dashboard — Jamaat Tab</div>
+        <div class="admin-mock">
+          <div class="admin-header">
+            <span class="back">←</span>
+            <span class="title">Admin Dashboard</span>
+          </div>
+          <div class="admin-tabs">
+            <div class="admin-tab active">Jamaat</div>
+            <div class="admin-tab">Hadith</div>
+            <div class="admin-tab">Notices</div>
+            <div class="admin-tab">Settings</div>
+          </div>
+          <div class="admin-body">
+            <div class="admin-row">
+              <div><div class="prayer-lbl">Fajr</div><div class="arabic-lbl">الفجر</div></div>
+              <input class="time-input" value="05:15" readonly>
+              <input class="note-input" value="Winter: 05:30" readonly>
+            </div>
+            <div class="admin-row">
+              <div><div class="prayer-lbl">Dhuhr</div><div class="arabic-lbl">الظهر</div></div>
+              <input class="time-input" value="13:15" readonly>
+              <input class="note-input" value="Fri: Jumu'ah" readonly>
+            </div>
+            <div class="admin-row">
+              <div><div class="prayer-lbl">Asr</div><div class="arabic-lbl">العصر</div></div>
+              <input class="time-input" value="16:00" readonly>
+              <input class="note-input" value="" readonly>
+            </div>
+            <div class="admin-row">
+              <div><div class="prayer-lbl">Maghrib</div><div class="arabic-lbl">المغرب</div></div>
+              <input class="time-input" value="auto" readonly>
+              <input class="note-input" value="" readonly>
+            </div>
+            <div class="admin-row">
+              <div><div class="prayer-lbl">Isha</div><div class="arabic-lbl">العشاء</div></div>
+              <input class="time-input" value="22:30" readonly>
+              <input class="note-input" value="" readonly>
+            </div>
+            <div style="text-align:center; margin-top:12px;">
+              <button style="background:#C9A84C; color:#0a0f1e; border:none; border-radius:6px; padding:8px 24px; font-weight:bold; font-size:9pt;">Save Changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>Jamaat Time Management</h3>
+      <p>Set the congregation (Jamaat) time for each of the 5 daily prayers. Changes are saved to Firebase Firestore and appear on the display screen within seconds.</p>
+
+      <h4>Fields per Prayer</h4>
+      <ul>
+        <li><strong>Jamaat Time:</strong> Enter in HH:MM (24-hour) format. Validated against waqt boundaries — cannot be set before waqt start or after waqt end.</li>
+        <li><strong>Note (optional):</strong> Free text, e.g., seasonal variation times or special event info. Shown in the Notes column on display.</li>
+      </ul>
+
+      <h4>Special: Maghrib "auto" Mode</h4>
+      <div class="info-box">
+        Setting Maghrib jamaat to <code>auto</code> makes the display show the calculated sunset time as the jamaat time. This updates daily automatically — no admin action needed.
+      </div>
+
+      <h4>Validation Rules</h4>
+      <ul>
+        <li>Jamaat time must be after waqt start</li>
+        <li>Jamaat time must be before next waqt starts</li>
+        <li>Times stored in HH:MM string format</li>
+        <li>Validation error shown inline if time is outside valid range</li>
+      </ul>
+
+      <h4>Friday (Jumu'ah)</h4>
+      <p>On Fridays, Dhuhr's label automatically changes to <strong>"Jumu'ah"</strong> on the display. No admin action needed — this is automatic based on day-of-week detection.</p>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 8. ADMIN — HADITH                             -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="admin-hadith">
+  <h2>8. Admin — Hadith Management</h2>
+
+  <div class="col-40-60">
+    <div>
+      <div class="mockup-container">
+        <div class="mockup-label">Admin Dashboard — Hadith Tab</div>
+        <div class="admin-mock">
+          <div class="admin-header">
+            <span class="back">←</span>
+            <span class="title">Admin Dashboard</span>
+          </div>
+          <div class="admin-tabs">
+            <div class="admin-tab">Jamaat</div>
+            <div class="admin-tab active">Hadith</div>
+            <div class="admin-tab">Notices</div>
+            <div class="admin-tab">Settings</div>
+          </div>
+          <div class="admin-body">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+              <span style="font-size:9pt; color:#333;">Rotation interval: <strong>30 seconds</strong></span>
+              <button style="background:#C9A84C; color:#000; border:none; border-radius:4px; padding:4px 12px; font-size:8pt; font-weight:bold;">+ Add</button>
+            </div>
+            <div class="hadith-item">
+              <span class="toggle hd-active">●</span>
+              <div>
+                <div class="hd-text">"The best of you is the one who learns the Quran and teaches it."</div>
+                <div class="hd-source">Sahih al-Bukhari · Uthman ibn Affan RA</div>
+              </div>
+            </div>
+            <div class="hadith-item">
+              <span class="toggle hd-active">●</span>
+              <div>
+                <div class="hd-text">"Actions are judged by intentions..."</div>
+                <div class="hd-source">Sahih Bukhari & Muslim · Umar ibn al-Khattab RA</div>
+              </div>
+            </div>
+            <div class="hadith-item" style="opacity:0.5;">
+              <span class="toggle hd-inactive">○</span>
+              <div>
+                <div class="hd-text">"Smiling at your brother is an act of charity."</div>
+                <div class="hd-source">Tirmidhi · Abu Dharr RA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>Hadith Library Management</h3>
+      <p>Build and manage a library of Islamic hadiths that rotate on the display screen footer. Each hadith entry has three text fields.</p>
+
+      <table class="doc-table">
+        <tr><th>Field</th><th>Description</th><th>Example</th></tr>
+        <tr>
+          <td><strong>Translation</strong></td>
+          <td>Main hadith text in English (or Bengali)</td>
+          <td>"The best of you is the one who learns the Quran…"</td>
+        </tr>
+        <tr>
+          <td><strong>Source</strong></td>
+          <td>Hadith collection name</td>
+          <td>Sahih al-Bukhari</td>
+        </tr>
+        <tr>
+          <td><strong>Narrator</strong></td>
+          <td>Companion who narrated the hadith</td>
+          <td>Uthman ibn Affan (RA)</td>
+        </tr>
+      </table>
+
+      <h4>Active / Inactive Toggle</h4>
+      <ul>
+        <li>Each hadith can be marked <strong class="green-text">active</strong> or <strong style="color:#ccc">inactive</strong></li>
+        <li>Only active hadiths appear in the display rotation</li>
+        <li>Inactive entries remain in the database for future reuse</li>
+      </ul>
+
+      <h4>Rotation Interval</h4>
+      <div class="info-box">
+        Admin configures how many seconds each hadith is displayed before rotating to the next. The setting applies globally to all hadiths.
+      </div>
+
+      <h4>Operations</h4>
+      <ul>
+        <li><strong>Add:</strong> Tap "+ Add" button, fill in 3 fields, save</li>
+        <li><strong>Edit:</strong> Tap any hadith to open editor</li>
+        <li><strong>Delete:</strong> Swipe or use delete button in editor</li>
+        <li><strong>Toggle:</strong> Tap the active/inactive dot indicator</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 9. ADMIN — NOTICES                            -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="admin-notices">
+  <h2>9. Admin — Notices (Scrolling Announcements)</h2>
+
+  <div class="col-40-60">
+    <div>
+      <div class="mockup-container">
+        <div class="mockup-label">Admin Dashboard — Notices Tab</div>
+        <div class="admin-mock">
+          <div class="admin-header">
+            <span class="back">←</span>
+            <span class="title">Admin Dashboard</span>
+          </div>
+          <div class="admin-tabs">
+            <div class="admin-tab">Jamaat</div>
+            <div class="admin-tab">Hadith</div>
+            <div class="admin-tab active">Notices</div>
+            <div class="admin-tab">Settings</div>
+          </div>
+          <div class="admin-body">
+            <div style="text-align:right; margin-bottom:10px;">
+              <button style="background:#C9A84C; color:#000; border:none; border-radius:4px; padding:4px 12px; font-size:8pt; font-weight:bold;">+ Add Notice</button>
+            </div>
+            <div class="notice-item">
+              <span class="n-priority">P1</span>
+              <span class="n-text">Ramadan Tarawih prayers at 10:30 PM — All brothers are welcome</span>
+              <span class="n-toggle n-on">●</span>
+            </div>
+            <div class="notice-item">
+              <span class="n-priority">P2</span>
+              <span class="n-text">Quran Tajweed class every Saturday 8:00 PM at the Masjid</span>
+              <span class="n-toggle n-on">●</span>
+            </div>
+            <div class="notice-item" style="opacity:0.5;">
+              <span class="n-priority">P3</span>
+              <span class="n-text">Masjid annual fundraiser — coming soon</span>
+              <span class="n-toggle n-off">○</span>
+            </div>
+            <div class="notice-item">
+              <span class="n-priority">P5</span>
+              <span class="n-text">Sisters' halaqa on Tuesdays after Asr prayer</span>
+              <span class="n-toggle n-on">●</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>Notice Management</h3>
+      <p>Create and manage scrolling announcements shown in the display footer ticker. Multiple notices cycle continuously.</p>
+
+      <table class="doc-table">
+        <tr><th>Field</th><th>Description</th></tr>
+        <tr>
+          <td><strong>Text</strong></td>
+          <td>Announcement content — any length, displayed in the scrolling ticker</td>
+        </tr>
+        <tr>
+          <td><strong>Priority</strong></td>
+          <td>Integer sort order. Lower number = displayed earlier in ticker. Notices sorted ascending by priority.</td>
+        </tr>
+        <tr>
+          <td><strong>Active</strong></td>
+          <td>Toggle on/off. Only active notices appear in the display ticker.</td>
+        </tr>
+      </table>
+
+      <h4>Display Behavior</h4>
+      <ul>
+        <li>All active notices are <strong>concatenated</strong> into one continuous scroll</li>
+        <li>Notices separated by decorative <code>✦</code> characters</li>
+        <li>Scroll animates infinitely from right to left</li>
+        <li>Scroll speed is consistent regardless of total text length</li>
+        <li>If no active notices: ticker section is hidden</li>
+      </ul>
+
+      <h4>Operations</h4>
+      <ul>
+        <li><strong>Add:</strong> "+ Add Notice" → enter text, set priority → save</li>
+        <li><strong>Edit:</strong> Tap notice → edit dialog opens</li>
+        <li><strong>Delete:</strong> Delete button in editor</li>
+        <li><strong>Toggle:</strong> Tap the active indicator dot</li>
+        <li><strong>Reorder:</strong> Change priority numbers to reorder</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 10. ADMIN — SETTINGS                          -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="admin-settings">
+  <h2>10. Admin — Settings</h2>
+
+  <div class="col-40-60">
+    <div>
+      <div class="mockup-container">
+        <div class="mockup-label">Admin Dashboard — Settings Tab</div>
+        <div class="admin-mock" style="max-width: 100%;">
+          <div class="admin-header">
+            <span class="back">←</span>
+            <span class="title">Admin Dashboard</span>
+          </div>
+          <div class="admin-tabs">
+            <div class="admin-tab">Jamaat</div>
+            <div class="admin-tab">Hadith</div>
+            <div class="admin-tab">Notices</div>
+            <div class="admin-tab active">Settings</div>
+          </div>
+          <div class="admin-body">
+            <div class="settings-group">
+              <div class="settings-group-label">Mosque Info</div>
+              <div class="settings-row"><span class="lbl">Name</span><span class="val">Masjid Al-Noor</span></div>
+              <div class="settings-row"><span class="lbl">Address</span><span class="val">123 Islamic Way, Dhaka</span></div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-label">Location &amp; Calculation</div>
+              <div class="settings-row"><span class="lbl">Latitude</span><span class="val-chip">23.8103</span></div>
+              <div class="settings-row"><span class="lbl">Longitude</span><span class="val-chip">90.4125</span></div>
+              <div class="settings-row"><span class="lbl">Method</span><span class="val-chip">KARACHI</span></div>
+              <div class="settings-row"><span class="lbl">Madhab</span><span class="val-chip">Hanafi</span></div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-label">Display</div>
+              <div class="settings-row"><span class="lbl">Language</span><span class="val-chip">Bengali</span></div>
+              <div class="settings-row"><span class="lbl">Countdown mins</span><span class="val-chip">10</span></div>
+              <div class="settings-row"><span class="lbl">Hijri offset</span><span class="val-chip">+1 day</span></div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-label">OTA Update</div>
+              <div class="settings-row"><span class="lbl">APK URL</span><span class="val">https://cdn.../v2.apk</span></div>
+              <div class="settings-row"><span class="lbl">Version code</span><span class="val-chip">2</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>Settings Reference</h3>
+
+      <h4>Mosque Info</h4>
+      <ul>
+        <li><strong>Name:</strong> Displayed prominently in the header</li>
+        <li><strong>Address:</strong> Stored for reference</li>
+      </ul>
+
+      <h4>Location &amp; Prayer Calculation</h4>
+      <table class="doc-table">
+        <tr><th>Setting</th><th>Options</th></tr>
+        <tr><td>Latitude / Longitude</td><td>Decimal degrees (e.g., 23.8103, 90.4125)</td></tr>
+        <tr><td>Calculation Method</td><td>MWL, ISNA, EGYPT, MAKKAH, KARACHI, MOON_SIGHTING, DUBAI</td></tr>
+        <tr><td>Madhab</td><td>Hanafi (later Asr) or Shafi (earlier Asr)</td></tr>
+      </table>
+
+      <h4>Display Settings</h4>
+      <table class="doc-table">
+        <tr><th>Setting</th><th>Description</th></tr>
+        <tr><td>Language</td><td>English or Bengali (affects dates, numerals)</td></tr>
+        <tr><td>Countdown Minutes</td><td>Minutes before jamaat to show the countdown banner</td></tr>
+        <tr><td>Hijri Date Offset</td><td>± days adjustment for local moon-sighting decisions</td></tr>
+      </table>
+
+      <h4>OTA Update (Over-the-Air)</h4>
+      <div class="warn-box">
+        <strong>OTA Update:</strong> Admin enters an APK download URL and version code. The display app checks its current version — if lower than configured version code, it auto-downloads and installs the new APK silently.
+      </div>
+      <ul>
+        <li>APK URL: direct link to the updated APK file</li>
+        <li>Version Code: integer (must be higher than installed version to trigger update)</li>
+        <li>Download happens in background using WorkManager</li>
+        <li>Install prompt shown automatically when download completes</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 11. PRAYER CALCULATION ENGINE                 -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="prayer-calc">
+  <h2>11. Prayer Calculation Engine</h2>
+
+  <p>Prayer times are calculated entirely on-device using the <strong>Adhan library</strong> (batoulapps/adhan-java v1.2.1). No external API is needed.</p>
+
+  <div class="two-col">
+    <div>
+      <h3>Calculation Methods</h3>
+      <table class="doc-table">
+        <tr><th>Method</th><th>Used By</th></tr>
+        <tr><td>MWL</td><td>Muslim World League (default)</td></tr>
+        <tr><td>ISNA</td><td>North America</td></tr>
+        <tr><td>EGYPT</td><td>Egyptian General Authority</td></tr>
+        <tr><td>MAKKAH</td><td>Saudi Arabia (Umm al-Qura)</td></tr>
+        <tr><td>KARACHI</td><td>Pakistan / Bangladesh ✓</td></tr>
+        <tr><td>MOON_SIGHTING</td><td>UK Moon Sighting Committee</td></tr>
+        <tr><td>DUBAI</td><td>UAE</td></tr>
+      </table>
+
+      <h3>Madhab (Asr Calculation)</h3>
+      <table class="doc-table">
+        <tr><th>Madhab</th><th>Asr Shadow Ratio</th><th>Effect</th></tr>
+        <tr><td>Hanafi</td><td>2× object length</td><td>Later Asr time</td></tr>
+        <tr><td>Shafi / Maliki / Hanbali</td><td>1× object length</td><td>Earlier Asr time</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Calculated Data</h3>
+      <ul>
+        <li>Fajr, Sunrise, Dhuhr, Asr, Maghrib (Sunset), Isha times</li>
+        <li>Waqt end times (= next prayer's start)</li>
+        <li>Makrooh windows (Ishraq, Zawal, Sunset)</li>
+        <li>Hijri (Islamic) date from Android ICU IslamicCalendar</li>
+        <li>Next prayer name and minutes until</li>
+        <li>Current prayer identification</li>
+      </ul>
+
+      <h3>Time Synchronization</h3>
+      <ul>
+        <li>Clock synced via <strong>NTP</strong> (Network Time Protocol) at app start</li>
+        <li>Uses Bangladesh Standard Time (UTC+6)</li>
+        <li>Falls back to device clock if NTP unavailable</li>
+        <li>Clock updates every second (1s coroutine ticker)</li>
+      </ul>
+
+      <h3>Hijri Date</h3>
+      <ul>
+        <li>Calculated from Android ICU IslamicCalendar</li>
+        <li>Admin can set ± day offset for moon-sighting adjustment</li>
+        <li>Displayed in Arabic script and Bengali if language = Bengali</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 12. OFFLINE MODE                              -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section section-alt" id="offline">
+  <h2>12. Offline Mode &amp; Data Sync</h2>
+
+  <div class="info-box">
+    <strong>Design principle:</strong> The display app never reads directly from Firestore. All UI reads from Room (local SQLite). Firestore data flows into Room via background listeners. This guarantees the display always works, even with no internet.
+  </div>
+
+  <div class="two-col" style="margin-top: 16px;">
+    <div>
+      <h3>Sync Architecture</h3>
+      <div class="flow-step"><div class="step-box">Firebase Firestore</div><span class="arrow">↓</span><div style="font-size:9pt;">snapshot listener</div></div>
+      <div class="flow-step"><div class="step-box">FirestoreRepository</div><span class="arrow">↓</span><div style="font-size:9pt;">upsert to Room</div></div>
+      <div class="flow-step"><div class="step-box">Room Database</div><span class="arrow">↓</span><div style="font-size:9pt;">Flow&lt;T&gt; (reactive)</div></div>
+      <div class="flow-step"><div class="step-box">DisplayViewModel</div><span class="arrow">↓</span><div style="font-size:9pt;">StateFlow to UI</div></div>
+      <div class="flow-step"><div class="step-box">Display Screen</div><span class="arrow"></span></div>
+    </div>
+    <div>
+      <h3>Offline Behavior</h3>
+      <table class="doc-table">
+        <tr><th>Feature</th><th>Online</th><th>Offline</th></tr>
+        <tr><td>Prayer times</td><td>✅ Live calc</td><td>✅ Local calc</td></tr>
+        <tr><td>Jamaat times</td><td>✅ Firestore live</td><td>✅ Last cached</td></tr>
+        <tr><td>Hadiths</td><td>✅ Firestore live</td><td>✅ Last cached</td></tr>
+        <tr><td>Notices</td><td>✅ Firestore live</td><td>✅ Last cached</td></tr>
+        <tr><td>Clock</td><td>✅ NTP synced</td><td>✅ Device clock</td></tr>
+        <tr><td>Hijri date</td><td>✅ ICU calc</td><td>✅ ICU calc</td></tr>
+        <tr><td>Offline badge</td><td>Hidden</td><td>🔴 Shown in header</td></tr>
+      </table>
+
+      <h3>Network Status</h3>
+      <ul>
+        <li>ConnectivityManager monitors network state</li>
+        <li>Network loss triggers "OFFLINE" badge in header (red)</li>
+        <li>When connection restored: Firestore listeners resume, Room syncs automatically</li>
+        <li>Display continues working throughout — no interruption to congregants</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 13. OTA UPDATES                               -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="ota">
+  <h2>13. Over-the-Air (OTA) Updates</h2>
+
+  <p>Admin can push app updates to display devices without physical access — useful for TV-mounted displays that are hard to reach.</p>
+
+  <div class="two-col">
+    <div>
+      <h3>Update Flow</h3>
+      <div class="flow-step"><div class="step-box" style="background:#C9A84C; color:#000;">1. Upload new APK</div><span class="arrow">→</span><div style="font-size:9pt;">to any file host (CDN, GitHub releases, etc.)</div></div>
+      <div style="height:8px;"></div>
+      <div class="flow-step"><div class="step-box" style="background:#C9A84C; color:#000;">2. Admin sets URL + version</div><span class="arrow">→</span><div style="font-size:9pt;">in Settings tab</div></div>
+      <div style="height:8px;"></div>
+      <div class="flow-step"><div class="step-box" style="background:#4CAF50; color:#fff;">3. App detects new version</div><span class="arrow">→</span><div style="font-size:9pt;">current version code &lt; configured version code</div></div>
+      <div style="height:8px;"></div>
+      <div class="flow-step"><div class="step-box" style="background:#4CAF50; color:#fff;">4. WorkManager downloads APK</div><span class="arrow">→</span><div style="font-size:9pt;">background download</div></div>
+      <div style="height:8px;"></div>
+      <div class="flow-step"><div class="step-box" style="background:#4CAF50; color:#fff;">5. Install prompt shown</div><span class="arrow">→</span><div style="font-size:9pt;">Android PackageInstaller</div></div>
+      <div style="height:8px;"></div>
+      <div class="flow-step"><div class="step-box" style="background:#42a5f5; color:#fff;">6. App updated silently</div><span class="arrow"></span></div>
+    </div>
+    <div>
+      <h3>Requirements</h3>
+      <ul>
+        <li>APK must be signed with the same keystore as the installed version</li>
+        <li>New version code must be <strong>higher</strong> than the installed version code</li>
+        <li>Device must have "Install from unknown sources" enabled (or system installer permission)</li>
+        <li>Network connectivity required for download</li>
+      </ul>
+
+      <h3>Technical Implementation</h3>
+      <ul>
+        <li>Check runs in <code>MainActivity</code> on app start and after Firestore config sync</li>
+        <li>Download handled by <code>WorkManager</code> (background, survives app lifecycle)</li>
+        <li>APK saved to app-private storage</li>
+        <li>Install triggered via Android <code>PackageInstaller</code> or <code>ACTION_VIEW</code> intent</li>
+        <li>FileProvider used to share APK URI securely</li>
+      </ul>
+
+      <div class="warn-box">
+        <strong>Caution:</strong> Ensure the APK URL is publicly accessible (or uses authentication headers). The download URL is stored in Firestore — only authenticated admins can change it.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 14. LOCALIZATION                              -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section section-alt" id="localization">
+  <h2>14. Localization (English &amp; Bengali)</h2>
+
+  <div class="two-col">
+    <div>
+      <h3>Language Support</h3>
+      <p>Admin selects <strong>English</strong> or <strong>Bengali</strong> in Settings. The choice affects:</p>
+      <table class="doc-table">
+        <tr><th>Element</th><th>English</th><th>Bengali</th></tr>
+        <tr><td>Hijri month names</td><td>Ramadan</td><td>রমজান</td></tr>
+        <tr><td>Gregorian month names</td><td>June</td><td>জুন</td></tr>
+        <tr><td>Day of week</td><td>Sunday</td><td>রবিবার</td></tr>
+        <tr><td>Numerals in Hijri date</td><td>1 (Arabic-Indic)</td><td>১ (Bengali)</td></tr>
+        <tr><td>Prayer names</td><td>Fajr</td><td>ফজর</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>Bengali Numeral Conversion</h3>
+      <p><code>BanglaUtils.kt</code> provides digit-by-digit conversion:</p>
+      <table class="doc-table">
+        <tr><th>Latin</th><th>Bengali</th></tr>
+        <tr><td>0 1 2 3 4</td><td>০ ১ ২ ৩ ৪</td></tr>
+        <tr><td>5 6 7 8 9</td><td>৫ ৬ ৭ ৮ ৯</td></tr>
+      </table>
+      <p style="margin-top: 10px;">Applied to: Hijri date digits, Hijri year, prayer times (when in Bengali mode).</p>
+
+      <h3>Arabic Script</h3>
+      <ul>
+        <li>Prayer Arabic names always shown: الفجر, الظهر, العصر, المغرب, العشاء</li>
+        <li>Hijri date shown with Arabic script month name regardless of language setting</li>
+        <li>Right-to-left rendering handled natively by Android</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 15. ARCHITECTURE                              -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="architecture">
+  <h2>15. Architecture &amp; Data Flow</h2>
+
+  <div class="arch-diagram"><span class="arch-gold">┌─────────────────── CLOUD ───────────────────────┐</span>
+│  <span class="arch-blue">Firebase Firestore</span>          <span class="arch-blue">Firebase Auth</span>      │
+│  mosques/default/data/         Email + Password     │
+│   ├── config (mosque info)     ─────────────────    │
+│   ├── jamaat_times             Admin only writes     │
+│   ├── hadith                                        │
+│   └── notices/ (collection)                         │
+<span class="arch-gold">└─────────────┬───────────────────────┬────────────┘</span>
+              │ snapshot listener      │ auth state
+              ▼                       ▼
+<span class="arch-green">┌─────────────────────────────────────────────────┐</span>
+│  <span class="arch-green">LOCAL LAYER — Room SQLite Database</span>              │
+│  ┌──────────────┐  ┌────────────┐  ┌──────────┐ │
+│  │ MosqueConfig │  │JamaatTimes │  │ Hadiths  │ │
+│  └──────────────┘  └────────────┘  └──────────┘ │
+│  ┌──────────────────────────────────────────┐    │
+│  │ Notices (priority-sorted collection)     │    │
+│  └──────────────────────────────────────────┘    │
+<span class="arch-green">└──────────────────┬──────────────────────────────┘</span>
+                   │ Flow<T> (reactive streams)
+                   ▼
+<span class="arch-cyan">┌─────────────────────────────────────────────────┐</span>
+│  <span class="arch-cyan">ViewModels</span>                                      │
+│  DisplayViewModel        AdminPanelViewModel      │
+│  + PrayerCalculator      + AdminAuthViewModel     │
+│  + NtpTimeProvider                                │
+│  + ConnectivityManager                            │
+<span class="arch-cyan">└──────────────────┬──────────────────────────────┘</span>
+                   │ StateFlow (UI state)
+                   ▼
+<span class="arch-gold">┌─────────────────────────────────────────────────┐</span>
+│  <span class="arch-gold">Jetpack Compose UI</span>                              │
+│  DisplayScreen ──── Landscape, Fullscreen        │
+│  AdminPanel    ──── Portrait, Auth-gated         │
+<span class="arch-gold">└─────────────────────────────────────────────────┘</span></div>
+
+  <div class="two-col" style="margin-top: 20px;">
+    <div>
+      <h3>Display Data Flow</h3>
+      <ol>
+        <li>FirestoreRepository listens to Firestore snapshots</li>
+        <li>On change: upserts data into Room via DAOs</li>
+        <li>Room DAOs expose <code>Flow&lt;T&gt;</code> (reactive queries)</li>
+        <li>DisplayViewModel collects Room flows + 1s clock ticker</li>
+        <li>PrayerCalculator computes times from config + current time</li>
+        <li>DisplayViewModel emits <code>DisplayState</code> via <code>StateFlow</code></li>
+        <li>DisplayScreen recomposes on each state change</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Admin Write Flow</h3>
+      <ol>
+        <li>Admin edits field in Admin Panel UI</li>
+        <li>AdminPanelViewModel calls <code>AdminRepository.saveXxx()</code></li>
+        <li>AdminRepository writes to Firestore via <code>.set()</code></li>
+        <li>Firestore snapshot listener fires on display device</li>
+        <li>FirestoreRepository upserts new data into Room</li>
+        <li>DisplayViewModel picks up Room change via Flow</li>
+        <li>Display screen updates — <strong>within seconds</strong></li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 16. TECH STACK                                -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="tech-stack">
+  <h2>16. Tech Stack Reference</h2>
+
+  <h3>Core Framework</h3>
+  <div class="tech-grid">
+    <span class="tech-badge">Kotlin 2.3.21</span>
+    <span class="tech-badge">Jetpack Compose</span>
+    <span class="tech-badge">Material 3</span>
+    <span class="tech-badge">Compose BOM 2024.12.01</span>
+    <span class="tech-badge">MVVM Pattern</span>
+  </div>
+
+  <h3>Backend &amp; Data</h3>
+  <div class="tech-grid">
+    <span class="tech-badge-blue">Firebase Firestore BOM 33.7.0</span>
+    <span class="tech-badge-blue">Firebase Auth</span>
+    <span class="tech-badge-blue">Room 2.8.4</span>
+    <span class="tech-badge-blue">DataStore Preferences 1.1.1</span>
+  </div>
+
+  <h3>Prayer &amp; Time</h3>
+  <div class="tech-grid">
+    <span class="tech-badge-green">Adhan Library 1.2.1</span>
+    <span class="tech-badge-green">Android ICU (IslamicCalendar)</span>
+    <span class="tech-badge-green">NTP Time Sync</span>
+  </div>
+
+  <h3>Async &amp; Background</h3>
+  <div class="tech-grid">
+    <span class="tech-badge">Coroutines 1.9.0</span>
+    <span class="tech-badge">StateFlow / Flow</span>
+    <span class="tech-badge">ViewModel Lifecycle 2.8.7</span>
+    <span class="tech-badge">WorkManager 2.10.0</span>
+  </div>
+
+  <h3>Build</h3>
+  <div class="tech-grid">
+    <span class="tech-badge-blue">Gradle 9.2.1 (Kotlin DSL)</span>
+    <span class="tech-badge-blue">KSP 2.3.8</span>
+    <span class="tech-badge-blue">Java 17 Target</span>
+    <span class="tech-badge-blue">ProGuard (release)</span>
+  </div>
+
+  <h3>Android Requirements</h3>
+  <table class="doc-table" style="margin-top: 12px;">
+    <tr><th>Requirement</th><th>Value</th><th>Notes</th></tr>
+    <tr><td>Minimum SDK</td><td>API 26 (Android 8.0)</td><td>Oreo or above</td></tr>
+    <tr><td>Target SDK</td><td>API 35 (Android 15)</td><td>Latest Android</td></tr>
+    <tr><td>Screen</td><td>Landscape only (display) / Portrait (admin)</td><td>Orientation changes programmatically</td></tr>
+    <tr><td>Android TV</td><td>Supported (Leanback)</td><td>Leanback library included</td></tr>
+    <tr><td>Screen always on</td><td>FLAG_KEEP_SCREEN_ON</td><td>Set in MainActivity</td></tr>
+    <tr><td>Fullscreen</td><td>Immersive mode</td><td>System bars hidden on display screen</td></tr>
+  </table>
+
+  <h3>Permissions Required</h3>
+  <table class="doc-table">
+    <tr><th>Permission</th><th>Purpose</th></tr>
+    <tr><td>INTERNET</td><td>Firebase connectivity, NTP sync, OTA download</td></tr>
+    <tr><td>ACCESS_NETWORK_STATE</td><td>Offline badge detection</td></tr>
+    <tr><td>REQUEST_INSTALL_PACKAGES</td><td>OTA APK installation</td></tr>
+    <tr><td>FOREGROUND_SERVICE</td><td>WorkManager background tasks</td></tr>
+  </table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- 17. COMPLETE FEATURE LIST                     -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="section" id="feature-list">
+  <h2>17. Complete Feature List</h2>
+
+  <h3>Display Screen Features</h3>
+  <div class="feature-grid">
+    <div class="feature-card">
+      <h4>Clock &amp; Time</h4>
+      <ul>
+        <li>Live clock updating every second</li>
+        <li>NTP-synced accurate time (UTC+6)</li>
+        <li>Sunrise and sunset display</li>
+        <li>24-hour format HH:MM:SS</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>Prayer Times</h4>
+      <ul>
+        <li>5 daily prayers auto-calculated</li>
+        <li>7 calculation methods supported</li>
+        <li>Hanafi and Shafi madhab options</li>
+        <li>Waqt start + end for each prayer</li>
+        <li>Current prayer highlighted (gold)</li>
+        <li>Next prayer highlighted (green)</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>Dates</h4>
+      <ul>
+        <li>Hijri (Islamic) date display</li>
+        <li>Arabic script month names always shown</li>
+        <li>Bengali month names when in Bengali mode</li>
+        <li>Hijri offset for moon-sighting adjustment</li>
+        <li>Gregorian date and day of week</li>
+        <li>Friday auto-labeled as Jumu'ah</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>Jamaat Times</h4>
+      <ul>
+        <li>Admin-set congregation times</li>
+        <li>Shown in cyan in prayer table</li>
+        <li>Maghrib "auto" = actual sunset time</li>
+        <li>Optional notes per prayer</li>
+        <li>Real-time sync from Firebase</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>Hadith Rotation</h4>
+      <ul>
+        <li>Rotating display of Islamic hadiths</li>
+        <li>Shows translation, source, narrator</li>
+        <li>Configurable rotation interval</li>
+        <li>Admin-managed hadith library</li>
+        <li>Active/inactive toggle per hadith</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>Notice Ticker</h4>
+      <ul>
+        <li>Infinite scrolling announcements</li>
+        <li>Multiple notices concatenated</li>
+        <li>Priority-sorted display order</li>
+        <li>Active/inactive per notice</li>
+        <li>Real-time update when admin changes</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>Smart Banners</h4>
+      <ul>
+        <li>Jamaat countdown banner (configurable minutes)</li>
+        <li>Ishraq prohibited time warning</li>
+        <li>Zawal prohibited time warning</li>
+        <li>Sunset makrooh time warning</li>
+        <li>Auto-shown and auto-hidden by time</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <h4>Connectivity</h4>
+      <ul>
+        <li>Offline badge in header when disconnected</li>
+        <li>All features work offline</li>
+        <li>Auto-resync when connection restored</li>
+        <li>Local Room cache as data source</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 20px;">Admin Panel Features</h3>
+  <table class="doc-table">
+    <tr>
+      <th>Tab</th>
+      <th>Features</th>
+    </tr>
+    <tr>
+      <td><strong>Jamaat</strong></td>
+      <td>Set congregation times for all 5 prayers; optional per-prayer notes; Maghrib "auto" mode; time validation against waqt boundaries; real-time sync to display</td>
+    </tr>
+    <tr>
+      <td><strong>Hadith</strong></td>
+      <td>Add / edit / delete hadiths; 3 fields (translation, source, narrator); active/inactive toggle; global rotation interval setting; unlimited entries</td>
+    </tr>
+    <tr>
+      <td><strong>Notices</strong></td>
+      <td>Add / edit / delete scrolling notices; priority ordering (lower = earlier); active/inactive toggle; real-time ticker update; unlimited notices</td>
+    </tr>
+    <tr>
+      <td><strong>Settings</strong></td>
+      <td>Mosque name and address; GPS coordinates; 7 prayer calculation methods; Hanafi/Shafi madhab; English/Bengali language; jamaat countdown duration; Hijri offset; OTA APK URL and version code</td>
+    </tr>
+    <tr>
+      <td><strong>Auth</strong></td>
+      <td>Firebase email/password login; persistent session; Firestore write access gated by auth; sign-out returns to display screen</td>
+    </tr>
+  </table>
+
+  <h3 style="margin-top: 20px;">System Features</h3>
+  <table class="doc-table">
+    <tr>
+      <th>Feature</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>Over-the-Air Updates</td>
+      <td>Admin pushes new APK URL + version code; display app auto-downloads and installs silently via WorkManager</td>
+    </tr>
+    <tr>
+      <td>Offline-First Architecture</td>
+      <td>Room SQLite caches all cloud data; prayer calculations are device-local; display never blocks on network</td>
+    </tr>
+    <tr>
+      <td>Real-Time Sync</td>
+      <td>Firestore snapshot listeners propagate admin changes to display within seconds</td>
+    </tr>
+    <tr>
+      <td>NTP Time Sync</td>
+      <td>Accurate clock from network time server at UTC+6 (Bangladesh Standard Time)</td>
+    </tr>
+    <tr>
+      <td>Screen Persistence</td>
+      <td>FLAG_KEEP_SCREEN_ON prevents display from sleeping; immersive fullscreen mode</td>
+    </tr>
+    <tr>
+      <td>Localization</td>
+      <td>English and Bengali language support with native numeral conversion and month names</td>
+    </tr>
+    <tr>
+      <td>Multi-Mosque Support</td>
+      <td>Firestore document ID-based separation; each mosque has its own data namespace</td>
+    </tr>
+    <tr>
+      <td>Android TV Support</td>
+      <td>Leanback library included; optimized for large-screen landscape display</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Footer -->
+<div class="section" style="padding-top: 10px; padding-bottom: 30px;">
+  <hr class="section-sep">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <strong>MasjidScreen</strong> — Mosque Live Display Application<br>
+      <span style="color:#888; font-size:9pt;">App ID: com.mirazanik.masjidscreen &nbsp;·&nbsp; Built with Kotlin + Jetpack Compose + Firebase</span>
+    </div>
+    <div style="text-align: right; color: #888; font-size: 9pt;">
+      Documentation generated June 2026<br>
+      mirazanik
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

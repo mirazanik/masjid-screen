@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /mosques/{mosqueId} {
+
+      function isSignedIn() {
+        return request.auth != null;
+      }
+      function isSuperAdmin() {
+        return isSignedIn()
+          && exists(/databases/$(database)/documents/mosques/$(mosqueId)/users/$(request.auth.uid))
+          && get(/databases/$(database)/documents/mosques/$(mosqueId)/users/$(request.auth.uid)).data.role == 'SUPER_ADMIN';
+      }
+
+      // Global config, jamaat, app_version, settings — display devices read, super admin write
+      match /data/{docId} {
+        allow read: if true;
+        allow write: if isSuperAdmin();
+      }
+
+      // Global hadiths and notices
+      match /hadiths/{hadithId} {
+        allow read: if true;
+        allow write: if isSuperAdmin();
+      }
+
+      match /notices/{noticeId} {
+        allow read: if true;
+        allow write: if isSuperAdmin();
+      }
+
+      // Screens — display devices are unauthenticated
+      match /screens/{screenId} {
+        allow read: if true;
+        allow create: if request.auth != null;
+        // Unauthenticated devices can only update pairing, heartbeat, and viewport fields
+        allow update: if request.auth != null
+                      || request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly([
+                             'pairedDeviceId',
+                             'lastSeenMs',
+                             'appVersion',
+                             'displayWidthPx',
+                             'displayHeightPx',
+                             'displayDensity',
+                             'displayFontScale',
+                             'displayWidthDp',
+                             'displayHeightDp'
+                           ]);
+        allow delete: if request.auth != null;
+
+        match /data/{docId} {
+          allow read: if true;
+          allow write: if request.auth != null;
+        }
+
+        match /hadiths/{hadithId} {
+          allow read: if true;
+          allow write: if request.auth != null;
+        }
+
+        match /notices/{noticeId} {
+          allow read: if true;
+          allow write: if request.auth != null;
+        }
+      }
+
+      // User profiles — any auth user reads all; each user creates own doc;
+      // any auth user can update (needed for super admin approving others)
+      match /users/{userId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null && request.auth.uid == userId;
+        allow update: if request.auth != null;
+        allow delete: if false;
+      }
+
+      // Screen groups — authenticated admins only
+      match /screenGroups/{groupId} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null;
+      }
+
+      // Invites — authenticated admins write; read own invites; deleted on registration
+      match /invites/{email} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null;
+      }
+
+      // Pending-user notifications — any auth user creates; super admins read/update/delete
+      match /notifications/{notifId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null;
+        allow update: if request.auth != null;
+        allow delete: if request.auth != null;
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+## This file is gitignored. Copy to local.properties and fill in your values.
+## Android Studio usually writes sdk.dir for you.
+
+# sdk.dir=C\:\\Users\\YOUR_USER\\AppData\\Local\\Android\\Sdk
+
+KEYSTORE_FILE=masjidscreen.keystore
+KEYSTORE_PASSWORD=
+KEY_ALIAS=androiddebugkey
+KEY_PASSWORD=
