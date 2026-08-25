@@ -1,0 +1,4 @@
+# Cloudflare Workers/Pages — static Vite app (no Functions required)
+name = "masjid-screen"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"
