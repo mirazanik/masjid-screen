@@ -306,7 +306,7 @@ export class DisplayController {
           <td>${escapeHtml(prayerLabel(row.name, bn, friday))}</td>
           <td>${timeCell(row.start, bn, row.subStart)}</td>
           <td>${timeCell(row.end, bn, row.subEnd)}</td>
-          <td>${jamaatCell}</td>
+          <td class="jamaat-cell">${jamaatCell}</td>
         </tr>`;
       })
       .join("");

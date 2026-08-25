@@ -172,9 +172,21 @@ body {
   font-weight: 600;
 }
 
-.prayer-table td:last-child {
-  color: var(--jamaat);
-  font-weight: 600;
+.prayer-table td.jamaat-cell {
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.prayer-table td.jamaat-cell .time-main {
+  color: var(--primary-light);
+  font-size: 1.08em;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.prayer-table tr.active td.jamaat-cell .time-main {
+  color: var(--primary);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--primary) 45%, transparent);
 }
 
 .prayer-table tr.active {
