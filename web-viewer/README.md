@@ -68,14 +68,15 @@ Cloudflare Pages free tier serves the static PWA; Firebase billing is only Fires
 
 The new **Workers & Pages** UI often has **no** “Build output directory” field. Use this:
 
-1. Add [`wrangler.toml`](wrangler.toml) in `web-viewer/` with `pages_build_output_dir = "dist"` (already in this repo).
+1. Keep [`wrangler.toml`](wrangler.toml) in `web-viewer/` with `[assets] directory = "./dist"` (already in this repo).
 2. **Root directory** = `web-viewer` — **not** `/web-viewer` (no leading slash).
 3. **Build command** = `npm run build`
-4. Put all `VITE_*` keys under **Build** → Variables (build-time). Runtime-only is not enough for Vite.
-5. Optional: add Build variable `NODE_VERSION` = `20`
-6. Commit + push `wrangler.toml`, then **Retry deployment**.
+4. **Deploy command** = `npx wrangler deploy` (default; needs `[assets]` in wrangler.toml)
+5. Put all `VITE_*` keys under **Build** variables (not only Runtime). Vite embeds them at build time.
+6. Optional Build variable: `NODE_VERSION` = `20`
+7. Commit + push `wrangler.toml`, then **Retry deployment**.
 
-If create form asks for Framework preset, choose **Vite**.
+If the build succeeds but deploy fails with “Missing entry-point… or assets directory”, your `wrangler.toml` is missing `[assets]` or was not pushed yet.
 
 ---
 
