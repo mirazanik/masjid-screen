@@ -31,6 +31,7 @@ On the **same Android app** used to manage the mosque (phone or tablet):
    - The full **link** under the QR
    - **Copy link** — copies the URL to the clipboard (paste in WhatsApp, SMS, email, etc.)
    - **Share link** — opens your phone’s share sheet (WhatsApp, Messenger, Gmail, …)
+   - **Download QR** — saves a print-ready PNG to **Pictures/MasjidScreen** (open it in Gallery to print or share)
    - **New QR** — invalidates the old link and creates a new one (use if the link was leaked)
    - **Revoke link permanently** — turns off public view and deletes the snapshot
 
@@ -40,10 +41,8 @@ On the **same Android app** used to manage the mosque (phone or tablet):
 |--------|------------|
 | **Show QR on your phone** | Open the Share tab; let people scan the QR with their camera |
 | **Copy / Share link** | Tap **Copy link** or **Share link**; send to a group or post on social media |
-| **Save QR as an image** | Take a **screenshot** of the Share tab (QR + link), then print or post the image |
-| **Print for the mosque** | Screenshot the QR, print it, put it on a notice board |
-
-There is no separate “Download QR” file button—the QR is on screen for scanning or screenshotting.
+| **Save QR as an image** | Tap **Download QR**; the PNG is saved to Pictures/MasjidScreen |
+| **Print for the mosque** | Download the QR, open it in Gallery, then print it for a notice board |
 
 ### Turn off public access
 
@@ -74,9 +73,11 @@ The new **Workers & Pages** UI often has **no** “Build output directory” fie
 4. **Deploy command** = `npx wrangler deploy` (default; needs `[assets]` in wrangler.toml)
 5. Put all `VITE_*` keys under **Build** variables (not only Runtime). Vite embeds them at build time.
 6. Optional Build variable: `NODE_VERSION` = `20`
-7. Commit + push `wrangler.toml`, then **Retry deployment**.
+7. Do **not** use `public/_redirects` with Workers assets — SPA routes are handled by `not_found_handling = "single-page-application"` in `wrangler.toml`.
+8. Commit + push, then **Retry deployment**.
 
-If the build succeeds but deploy fails with “Missing entry-point… or assets directory”, your `wrangler.toml` is missing `[assets]` or was not pushed yet.
+If the build succeeds but deploy fails with “Missing entry-point… or assets directory”, your `wrangler.toml` is missing `[assets]` or was not pushed yet.  
+If deploy fails with “Invalid _redirects… Infinite loop”, remove `_redirects` and rely on `wrangler.toml` SPA handling.
 
 ---
 
@@ -143,7 +144,7 @@ Cloudflare Pages deploys from Git. Ensure your repo (with the `web-viewer/` fold
 
 5. Click **Save and Deploy**. Wait for the first build to finish.
 
-SPA routing is handled by [`public/_redirects`](public/_redirects) (`/* → /index.html`).
+SPA routing (`/s/:token`) is handled by `not_found_handling = "single-page-application"` in [`wrangler.toml`](wrangler.toml). Do not add a `public/_redirects` file for Workers assets (it causes an infinite-loop deploy error).
 
 #### 4. Custom domain (mosque.mirazanik.com)
 
@@ -194,7 +195,7 @@ These are used by `npm run build` on your PC. On Cloudflare, set the same keys a
 
 | Problem | Fix |
 |---------|-----|
-| `/s/abc123` shows 404 | Ensure `_redirects` exists in `public/` and was deployed |
+| `/s/abc123` shows 404 | Confirm `wrangler.toml` has `not_found_handling = "single-page-application"` and redeploy |
 | “Unavailable” on phone | Enable public view in admin; check Firestore rules deployed |
 | Wrong mosque data | Confirm `VITE_MOSQUE_ID=default` and prod Firebase project |
 | QR opens wrong site | Rebuild Android app after changing `PUBLIC_VIEWER_BASE_URL` |

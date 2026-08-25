@@ -221,11 +221,123 @@ export function formatHijri(date: Date, offsetDays: number, language: string): s
   }
 }
 
-export function formatCountdown(totalMins: number): string {
-  const h = Math.floor(totalMins / 60);
-  const m = totalMins % 60;
+const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
+
+export function toBanglaDigits(input: string): string {
+  return input.replace(/\d/g, (d) => BN_DIGITS[Number(d)] ?? d);
+}
+
+export function to12Hour(time: string): string {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
+  if (!m) return time;
+  const hour = Number(m[1]);
+  const min = m[2];
+  const amPm = hour < 12 ? "AM" : "PM";
+  const h12 = hour % 12 === 0 ? 12 : hour % 12;
+  return `${h12}:${min} ${amPm}`;
+}
+
+export function addMinutes(time: string, minutes: number): string {
+  const mins = parseTimeToMins(time);
+  if (mins < 0) return time;
+  const adjusted = ((mins + minutes) % 1440 + 1440) % 1440;
+  return `${pad2(Math.floor(adjusted / 60))}:${pad2(adjusted % 60)}`;
+}
+
+export function minsToHm(mins: number): string {
+  const wrapped = ((mins % 1440) + 1440) % 1440;
+  return `${pad2(Math.floor(wrapped / 60))}:${pad2(wrapped % 60)}`;
+}
+
+export function formatDisplayTime(hm: string, bangla: boolean): string {
+  const t = to12Hour(hm);
+  return bangla ? toBanglaDigits(t) : t;
+}
+
+export function formatClock(
+  parts: { hours: number; minutes: number; seconds: number },
+  bangla: boolean
+): string {
+  const hour12 = parts.hours % 12 === 0 ? 12 : parts.hours % 12;
+  const amPm = parts.hours < 12 ? "AM" : "PM";
+  const raw = `${hour12}:${pad2(parts.minutes)}:${pad2(parts.seconds)} ${amPm}`;
+  return bangla ? toBanglaDigits(raw) : raw;
+}
+
+export function formatCountdown(totalMins: number, bangla = false): string {
+  const h = Math.floor(Math.max(0, totalMins) / 60);
+  const m = Math.max(0, totalMins) % 60;
+  if (bangla) {
+    if (h > 0) return `${toBanglaDigits(String(h))} ঘণ্টা ${toBanglaDigits(String(m))} মিনিট বাকি`;
+    return `${toBanglaDigits(String(m))} মিনিট বাকি`;
+  }
   if (h > 0) return `${h}h ${m}m`;
   return `${m}m`;
+}
+
+export function formatMmSs(totalSecs: number, bangla = false): string {
+  const s = Math.max(0, Math.floor(totalSecs));
+  const raw = `${Math.floor(s / 60)}:${pad2(s % 60)}`;
+  return bangla ? toBanglaDigits(raw) : raw;
+}
+
+export function isFridayBd(from: Date = new Date()): boolean {
+  const weekday = new Intl.DateTimeFormat("en-GB", {
+    timeZone: BD_TZ,
+    weekday: "short",
+  }).format(from);
+  return weekday === "Fri";
+}
+
+export type MakruhKey = "sunrise" | "zawal" | "sunset";
+
+export function getMakruhInfo(
+  prayerTimes: PrayerTimesStrings,
+  nowMins: number
+): { key: MakruhKey; endsAtMins: number } | null {
+  const sunrise = parseTimeToMins(prayerTimes.sunrise);
+  const dhuhr = parseTimeToMins(prayerTimes.dhuhr);
+  const maghrib = parseTimeToMins(prayerTimes.maghrib);
+  const ishraq = sunrise >= 0 ? sunrise + 20 : -1;
+  const zawal = dhuhr >= 0 ? dhuhr - 5 : -1;
+  const makrooh = maghrib >= 0 ? maghrib - 15 : -1;
+
+  if (sunrise >= 0 && nowMins >= sunrise && nowMins < ishraq) {
+    return { key: "sunrise", endsAtMins: ishraq };
+  }
+  if (zawal >= 0 && nowMins >= zawal && nowMins < dhuhr) {
+    return { key: "zawal", endsAtMins: dhuhr };
+  }
+  if (makrooh >= 0 && nowMins >= makrooh && nowMins < maghrib) {
+    return { key: "sunset", endsAtMins: maghrib };
+  }
+  return null;
+}
+
+export function getJamaatCountdown(
+  prayerTimes: PrayerTimesStrings,
+  jamaat: ShareJamaat,
+  nowSecs: number,
+  windowMins: number
+): { name: string; secsLeft: number } | null {
+  const resolved = resolveJamaatTimes(prayerTimes, jamaat);
+  const schedule: Array<[string, number]> = [
+    ["Fajr", parseTimeToMins(resolved.fajr)],
+    ["Dhuhr", parseTimeToMins(resolved.dhuhr)],
+    ["Asr", parseTimeToMins(resolved.asr)],
+    ["Maghrib", parseTimeToMins(resolved.maghrib)],
+    ["Isha", parseTimeToMins(resolved.isha)],
+  ];
+  const windowSecs = Math.max(1, windowMins) * 60;
+  let best: { name: string; secsLeft: number } | null = null;
+  for (const [name, mins] of schedule) {
+    if (mins < 0) continue;
+    const secsLeft = mins * 60 - nowSecs;
+    if (secsLeft >= 0 && secsLeft <= windowSecs) {
+      if (!best || secsLeft < best.secsLeft) best = { name, secsLeft };
+    }
+  }
+  return best;
 }
 
 export function pad2(n: number): string {

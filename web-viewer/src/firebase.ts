@@ -141,3 +141,14 @@ export function readCachedShare(token: string): PublicShareSnapshot | null {
     return null;
   }
 }
+
+export function readLastShareToken(): string | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { token: string; share: PublicShareSnapshot };
+    return parsed.token && parsed.share?.enabled ? parsed.token : null;
+  } catch {
+    return null;
+  }
+}

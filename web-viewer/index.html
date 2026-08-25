@@ -8,12 +8,20 @@
     />
     <meta name="theme-color" content="#050D1A" />
     <meta name="description" content="MasjidScreen public prayer display viewer" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <title>MasjidScreen</title>
   </head>
   <body>
     <div id="app"></div>
+    <button type="button" id="installPwa" class="install-fab" hidden>
+      <img src="/icons/icon-192.png" alt="" width="28" height="28" />
+      <span class="install-label">Install app</span>
+    </button>
+    <div id="installHint" class="install-hint" hidden>
+      <p id="installHintText"></p>
+      <button type="button" id="installHintClose">OK</button>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

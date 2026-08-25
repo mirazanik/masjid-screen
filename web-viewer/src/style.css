@@ -11,10 +11,11 @@
   --table-header: #1a6b3a;
   --active-row: #1a2e1a;
   --jamaat: #4fc3f7;
+  --prohibited: #ff7043;
   --divider: #1e3a5f;
   --ticker: #0a1520;
   --error: #ff8a80;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: "Nirmala UI", "Noto Sans Bengali", "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 html[data-theme="deep_emerald"] {
@@ -25,6 +26,7 @@ html[data-theme="deep_emerald"] {
   --table-header: #166b30;
   --active-row: #0c2810;
   --jamaat: #80cbc4;
+  --prohibited: #ff7043;
   --divider: #1a4028;
   --ticker: #040d07;
 }
@@ -37,6 +39,7 @@ html[data-theme="royal_amethyst"] {
   --table-header: #5e35b1;
   --active-row: #1a1030;
   --jamaat: #ce93d8;
+  --prohibited: #ff6e40;
   --divider: #3a2a5f;
   --ticker: #0a0618;
 }
@@ -59,7 +62,7 @@ body {
   flex-direction: column;
   max-width: 720px;
   margin: 0 auto;
-  padding: env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
+  padding: env(safe-area-inset-top) 12px calc(env(safe-area-inset-bottom) + 72px);
 }
 
 .center-msg {
@@ -148,18 +151,19 @@ body {
 .prayer-table th {
   background: var(--table-header);
   color: white;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 10px 8px;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  padding: 10px 6px;
   text-align: center;
+  font-weight: 700;
 }
 
 .prayer-table td {
-  padding: 11px 8px;
+  padding: 10px 6px;
   text-align: center;
   border-top: 1px solid var(--divider);
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  vertical-align: middle;
 }
 
 .prayer-table td:first-child {
@@ -181,6 +185,192 @@ body {
   color: var(--primary-light);
 }
 
+.prayer-table tr.jumuah td:first-child {
+  color: var(--primary-light);
+}
+
+.time-main .ampm,
+.time-sub .ampm,
+.banner-ends .ampm {
+  font-size: 0.62em;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.time-sub {
+  margin-top: 3px;
+  color: var(--prohibited);
+  font-size: 0.72em;
+  font-weight: 600;
+}
+
+.jamaat-note {
+  margin-top: 3px;
+  color: var(--primary);
+  opacity: 0.75;
+  font-size: 0.72em;
+  font-style: italic;
+}
+
+.makruh-banner,
+.jamaat-banner {
+  margin-top: 12px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.makruh-banner {
+  border: 1px solid color-mix(in srgb, var(--prohibited) 45%, transparent);
+  background: color-mix(in srgb, var(--prohibited) 12%, transparent);
+}
+
+.makruh-banner .banner-title {
+  color: var(--prohibited);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.makruh-banner .banner-body {
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.makruh-banner .banner-note {
+  margin-top: 4px;
+  color: var(--primary-light);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.makruh-banner .banner-ends {
+  margin-top: 6px;
+  color: var(--primary-light);
+  font-weight: 600;
+}
+
+.jamaat-banner {
+  border: 2px solid var(--jamaat);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--jamaat) 16%, transparent),
+    color-mix(in srgb, var(--jamaat) 8%, transparent)
+  );
+  animation: jamaat-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes jamaat-pulse {
+  0%,
+  100% {
+    border-color: color-mix(in srgb, var(--jamaat) 45%, transparent);
+  }
+  50% {
+    border-color: var(--jamaat);
+  }
+}
+
+.jamaat-banner .banner-title {
+  color: var(--jamaat);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.jamaat-timer {
+  margin-top: 4px;
+  color: var(--jamaat);
+  font-size: clamp(1.8rem, 8vw, 2.6rem);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.jamaat-mute {
+  margin-top: 6px;
+  display: inline-block;
+  color: var(--jamaat);
+  background: color-mix(in srgb, var(--jamaat) 12%, transparent);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.install-fab {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--primary);
+  background: var(--card);
+  color: var(--primary-light);
+  border-radius: 999px;
+  padding: 8px 14px 8px 8px;
+  font: inherit;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.install-fab img {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+}
+
+.install-fab:hover,
+.install-fab:focus-visible {
+  background: var(--header);
+  outline: none;
+}
+
+.install-fab[hidden],
+.install-hint[hidden] {
+  display: none !important;
+}
+
+@media (display-mode: standalone) {
+  .install-fab {
+    display: none !important;
+  }
+}
+
+.install-hint {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: max(72px, env(safe-area-inset-bottom));
+  z-index: 41;
+  max-width: 420px;
+  margin: 0 auto;
+  background: var(--card);
+  border: 1px solid var(--divider);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.install-hint p {
+  margin: 0 0 10px;
+  color: var(--text);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.install-hint button {
+  font: inherit;
+  font-weight: 700;
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  background: var(--primary);
+  color: #1a1200;
+  cursor: pointer;
+}
+
 .hadith-card {
   margin-top: 12px;
   background: var(--card);
@@ -195,6 +385,11 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 6px;
+}
+
+html[lang="bn"] .hadith-label {
+  text-transform: none;
+  letter-spacing: 0.04em;
 }
 
 .hadith-text {
@@ -234,6 +429,18 @@ body {
   }
   100% {
     transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 400px) {
+  .prayer-table th,
+  .prayer-table td {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+  }
+
+  .prayer-table td:first-child {
+    padding-left: 8px;
   }
 }
 

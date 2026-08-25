@@ -1,28 +1,39 @@
 import "./style.css";
-import { cacheShare, listenShare, readCachedShare } from "./firebase";
+import { cacheShare, listenShare, readCachedShare, readLastShareToken } from "./firebase";
 import {
   DisplayController,
   parseShareTokenFromPath,
   renderError,
   renderLoading,
 } from "./display";
+import { setupPwaInstall } from "./pwa-install";
 
 const root = document.querySelector<HTMLElement>("#app");
 if (!root) {
   throw new Error("#app missing");
 }
 
+let currentLanguage = "en";
+const pwa = setupPwaInstall(() => currentLanguage);
+
 const token = parseShareTokenFromPath(window.location.pathname);
 
 if (!token) {
-  renderError(
-    root,
-    "Open a share link from the MasjidScreen admin panel (or scan the QR code)."
-  );
+  const last = readLastShareToken();
+  if (last) {
+    window.location.replace(`/s/${last}`);
+  } else {
+    renderError(
+      root,
+      "Open a share link from the MasjidScreen admin panel (or scan the QR code)."
+    );
+  }
 } else {
   const controller = new DisplayController(root);
   const cached = readCachedShare(token);
   if (cached) {
+    currentLanguage = cached.config.language || "en";
+    pwa.refreshLabel();
     controller.setShare(cached);
   } else {
     renderLoading(root, "Loading display…");
@@ -37,6 +48,8 @@ if (!token) {
         renderError(root, "This public view is unavailable or has been revoked.");
         return;
       }
+      currentLanguage = share.config.language || "en";
+      pwa.refreshLabel();
       cacheShare(token, share);
       controller.setShare(share);
     },
