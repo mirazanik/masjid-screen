@@ -7,8 +7,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "favicon-32.png", "icons/icon-192.png", "icons/icon-512.png"],
       manifest: {
-        name: "MasjidScreen Viewer",
-        short_name: "MasjidScreen",
+        name: "Masjid Screen",
+        short_name: "Masjid Screen",
         description: "View mosque prayer display content on your phone",
         theme_color: "#050D1A",
         background_color: "#050D1A",
