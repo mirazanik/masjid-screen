@@ -20,7 +20,8 @@ import com.mirazanik.masjidscreen.util.PairingQr
 @Composable
 fun QrCodeImage(
     content: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentDescription: String = "QR code",
 ) {
     val bitmap = remember(content) { PairingQr.generateBitmap(content).asImageBitmap() }
     Box(
@@ -31,7 +32,7 @@ fun QrCodeImage(
     ) {
         Image(
             bitmap = bitmap,
-            contentDescription = "Pairing QR code",
+            contentDescription = contentDescription,
             contentScale = ContentScale.Fit,
             filterQuality = FilterQuality.None,
             modifier = Modifier.fillMaxSize()

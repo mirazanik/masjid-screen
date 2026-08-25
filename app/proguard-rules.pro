@@ -1,25 +1,30 @@
 # Keep line number info for crash reports
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+-keepattributes RuntimeVisibleAnnotations
 
-# Firebase Firestore
--keep class com.google.firebase.** { *; }
--keep class com.google.android.gms.** { *; }
--dontwarn com.google.firebase.**
--dontwarn com.google.android.gms.**
-
-# Firestore transport stack — stripping these leaves the client permanently "offline"
+# Firestore transport stack — stripping these leaves the client permanently "offline".
 -keep class io.grpc.** { *; }
 -keep class com.google.protobuf.** { *; }
--keepclassmembers class io.grpc.** { *; }
 -dontwarn io.grpc.**
 -dontwarn com.google.protobuf.**
 -dontwarn javax.naming.**
 -dontwarn javax.annotation.**
+-dontwarn com.google.firebase.**
+-dontwarn com.google.android.gms.**
 
-# Firebase Auth
--keepattributes Signature
--keepattributes *Annotation*
+# Firebase loads these by class name from manifest <meta-data>. R8 full mode can
+# drop them even with the library consumer rule, which crashes at launch:
+# "FirebaseCrashlytics component is not present."
+-keep class * implements com.google.firebase.components.ComponentRegistrar { *; }
+-keep class com.google.firebase.components.** { *; }
+-keep class com.google.firebase.crashlytics.** { *; }
+-keep class com.google.firebase.sessions.** { *; }
+-keep class com.google.firebase.installations.** { *; }
 
 # Room Database
 -keep class * extends androidx.room.RoomDatabase { *; }
@@ -33,37 +38,13 @@
 }
 -dontwarn kotlinx.coroutines.**
 
-# Kotlin Serialization / Reflection
--keepattributes RuntimeVisibleAnnotations
 -keep class kotlin.Metadata { *; }
--dontwarn kotlin.**
-
-# Adhan prayer times library
--keep class com.batoulapps.adhan.** { *; }
--dontwarn com.batoulapps.adhan.**
-
-# DataStore
--keep class androidx.datastore.** { *; }
--dontwarn androidx.datastore.**
-
-# WorkManager
--keep class androidx.work.** { *; }
--dontwarn androidx.work.**
 
 # Jetpack Compose (debug tooling only, safe to strip in release)
 -dontwarn androidx.compose.ui.tooling.**
 
-# QR pairing (ZXing encode + ML Kit scan)
--keep class com.google.zxing.** { *; }
--dontwarn com.google.zxing.**
--keep class com.google.mlkit.** { *; }
--dontwarn com.google.mlkit.**
--keep class androidx.camera.** { *; }
--dontwarn androidx.camera.**
-
-# App-specific data models (Firebase serialization)
+# App-specific data models (Firestore field maps / Room)
 -keep class com.mirazanik.masjidscreen.data.model.** { *; }
--keep class com.mirazanik.masjidscreen.domain.model.** { *; }
 
 # Prevent stripping app's Application class
 -keep class com.mirazanik.masjidscreen.MosqueApplication { *; }

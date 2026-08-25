@@ -26,6 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import com.mirazanik.masjidscreen.BuildConfig
 import com.mirazanik.masjidscreen.admin.ui.component.QrScannerDialog
 import com.mirazanik.masjidscreen.admin.viewmodel.AdminPanelViewModel
 import com.mirazanik.masjidscreen.admin.viewmodel.AdminUiState
@@ -35,6 +40,7 @@ import com.mirazanik.masjidscreen.data.model.ScreenGroup
 import com.mirazanik.masjidscreen.data.model.ScreenInfo
 import com.mirazanik.masjidscreen.data.model.ScreenLayout
 import com.mirazanik.masjidscreen.ui.component.DisplayEditActions
+import com.mirazanik.masjidscreen.ui.component.QrCodeImage
 import com.mirazanik.masjidscreen.ui.component.ScaledDisplayCanvas
 import com.mirazanik.masjidscreen.ui.component.toPreviewSpec
 import com.mirazanik.masjidscreen.ui.theme.AppTheme
@@ -565,15 +571,232 @@ private fun PairingCodeDialog(code: String, onDismiss: () -> Unit) {
     )
 }
 
+@Composable
+private fun PublicShareTab(
+    screen: ScreenInfo,
+    isSaving: Boolean,
+    onEnable: () -> Unit,
+    onDisable: () -> Unit,
+    onRegenerate: () -> Unit,
+    onRevoke: () -> Unit,
+) {
+    val clipboard = LocalClipboardManager.current
+    val context = LocalContext.current
+    var copied by remember { mutableStateOf(false) }
+    var confirmRevoke by remember { mutableStateOf(false) }
+    var confirmRegen by remember { mutableStateOf(false) }
+
+    val shareUrl = remember(screen.shareToken, screen.shareEnabled) {
+        if (screen.hasPublicShare) {
+            "${BuildConfig.PUBLIC_VIEWER_BASE_URL.trimEnd('/')}/s/${screen.shareToken}"
+        } else ""
+    }
+
+    LaunchedEffect(copied) {
+        if (copied) {
+            kotlinx.coroutines.delay(2000)
+            copied = false
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "Public view",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            text = "Share a QR code or link so anyone can see this screen’s content on their phone. " +
+                "Clock and prayer times update on the phone; content refreshes when you save changes.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Enable public view", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    if (screen.shareEnabled) "Anyone with the link can view" else "Link is off",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = screen.shareEnabled,
+                onCheckedChange = { enabled ->
+                    if (enabled) onEnable() else onDisable()
+                },
+                enabled = !isSaving
+            )
+        }
+
+        if (screen.hasPublicShare) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                QrCodeImage(
+                    content = shareUrl,
+                    contentDescription = "Public view QR code",
+                    modifier = Modifier.size(200.dp)
+                )
+                Text(
+                    text = shareUrl,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = {
+                            clipboard.setText(AnnotatedString(shareUrl))
+                            copied = true
+                        },
+                        modifier = Modifier.weight(1f),
+                        enabled = !isSaving
+                    ) {
+                        Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(if (copied) "Copied" else "Copy link")
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            val send = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, shareUrl)
+                                putExtra(
+                                    Intent.EXTRA_SUBJECT,
+                                    "MasjidScreen — ${screen.name.ifBlank { "Display" }}"
+                                )
+                            }
+                            context.startActivity(Intent.createChooser(send, "Share link"))
+                        },
+                        modifier = Modifier.weight(1f),
+                        enabled = !isSaving
+                    ) {
+                        Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text("Share link")
+                    }
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedButton(
+                        onClick = { confirmRegen = true },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isSaving
+                    ) {
+                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text("New QR / link")
+                    }
+                }
+                Text(
+                    "Tip: screenshot this page to save or print the QR code.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                TextButton(
+                    onClick = { confirmRevoke = true },
+                    enabled = !isSaving,
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Revoke link permanently")
+                }
+            }
+        } else if (!screen.shareEnabled && screen.shareToken.isNotBlank()) {
+            Text(
+                "Public view is off. Turn it on to restore the previous link, or revoke to invalidate it.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            TextButton(
+                onClick = { confirmRevoke = true },
+                enabled = !isSaving,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Revoke old link")
+            }
+        }
+
+        if (isSaving) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+        }
+    }
+
+    if (confirmRevoke) {
+        AlertDialog(
+            onDismissRequest = { confirmRevoke = false },
+            title = { Text("Revoke public link?") },
+            text = {
+                Text("The current QR and link will stop working. You can create a new one later.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmRevoke = false
+                        onRevoke()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) { Text("Revoke") }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmRevoke = false }) { Text("Cancel") }
+            }
+        )
+    }
+
+    if (confirmRegen) {
+        AlertDialog(
+            onDismissRequest = { confirmRegen = false },
+            title = { Text("Generate new QR?") },
+            text = {
+                Text("The old link and QR will stop working immediately.")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmRegen = false
+                        onRegenerate()
+                    }
+                ) { Text("Generate") }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmRegen = false }) { Text("Cancel") }
+            }
+        )
+    }
+}
+
 // â”€â”€ Screen manage view â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-private val manageTabs = listOf("Show", "Jamaat", "Hadith", "Notices", "Settings")
+private val manageTabs = listOf("Show", "Jamaat", "Hadith", "Notices", "Settings", "Share")
 private val manageTabIcons = listOf(
     Icons.Default.Tv,
     Icons.Default.AccessTime,
     Icons.AutoMirrored.Filled.MenuBook,
     Icons.Default.Campaign,
     Icons.Default.Settings,
+    Icons.Default.QrCode2,
 )
 
 private enum class ScreenEditor {
@@ -607,11 +830,10 @@ private fun ScreenManageView(
 
     val showDevicePreview = selectedTab == 0 && editor == null && !liveEdit
     val liveEditPreview = liveEdit && editor == null
+    val wantLandscape = showDevicePreview || liveEditPreview
 
-    LaunchedEffect(showDevicePreview, liveEditPreview) {
-        onRequestLandscape(showDevicePreview || liveEditPreview)
-    }
-    DisposableEffect(Unit) {
+    DisposableEffect(wantLandscape) {
+        onRequestLandscape(wantLandscape)
         onDispose { onRequestLandscape(false) }
     }
 
@@ -726,6 +948,14 @@ private fun ScreenManageView(
                                 globalConfig = state.config,
                                 isSaving = state.screenSaving || state.isSaving,
                                 onSaveConfig = { config -> requestSave { applyToGroup -> adminVm.saveScreenConfig(config, applyToGroup) } },
+                            )
+                            5 -> PublicShareTab(
+                                screen = screen,
+                                isSaving = state.screenSaving,
+                                onEnable = { adminVm.enablePublicShare(screen.screenId) },
+                                onDisable = { adminVm.disablePublicShare(screen.screenId) },
+                                onRegenerate = { adminVm.regeneratePublicShare(screen.screenId) },
+                                onRevoke = { adminVm.revokePublicShare(screen.screenId) },
                             )
                         }
                     }

@@ -7,4 +7,12 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowNoTitle">true</item>
     </style>
+
+    <!-- Not fullscreen: Credential Manager account picker must receive taps. -->
+    <style name="Theme.MasjidScreen.SignIn" parent="Theme.MasjidScreen">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
 </resources>

@@ -13,18 +13,18 @@ build/
 *.iws
 out/
 
-# Local SDK path and signing (never commit)
+# Local configuration
 local.properties
 
-# Firebase — download from the console; keep only *.example in git
-**/google-services.json
-!**/google-services.json.example
+# Secrets (optional: uncomment to keep Firebase configs out of git)
+# google-services.json
+# **/google-services.json
 
-# Signing keys — keep copies only on your PC, not GitHub
+# Ignore private Play upload keys. Keep app/masjidscreen.keystore committed.
 *.jks
-*.keystore
-*.p12
-*.pem
+upload*.keystore
+!app/masjidscreen.keystore
+
 
 # Log files
 *.log
@@ -44,5 +44,11 @@ Thumbs.db
 # Misc
 *.swp
 *~
+
+# Web viewer
+web-viewer/node_modules/
+web-viewer/dist/
+.firebase/
+
 .externalNativeBuild
 .cxx/

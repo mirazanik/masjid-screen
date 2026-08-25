@@ -285,6 +285,46 @@ class AdminPanelViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    fun enablePublicShare(screenId: String) = viewModelScope.launch {
+        _state.update { it.copy(screenSaving = true, errorMessage = null) }
+        try {
+            repo.enablePublicShare(screenId)
+            _state.update { it.copy(screenSaving = false, saveSuccess = true) }
+        } catch (e: Exception) {
+            _state.update { it.copy(screenSaving = false, errorMessage = e.message) }
+        }
+    }
+
+    fun disablePublicShare(screenId: String) = viewModelScope.launch {
+        _state.update { it.copy(screenSaving = true, errorMessage = null) }
+        try {
+            repo.disablePublicShare(screenId)
+            _state.update { it.copy(screenSaving = false, saveSuccess = true) }
+        } catch (e: Exception) {
+            _state.update { it.copy(screenSaving = false, errorMessage = e.message) }
+        }
+    }
+
+    fun revokePublicShare(screenId: String) = viewModelScope.launch {
+        _state.update { it.copy(screenSaving = true, errorMessage = null) }
+        try {
+            repo.revokePublicShare(screenId)
+            _state.update { it.copy(screenSaving = false, saveSuccess = true) }
+        } catch (e: Exception) {
+            _state.update { it.copy(screenSaving = false, errorMessage = e.message) }
+        }
+    }
+
+    fun regeneratePublicShare(screenId: String) = viewModelScope.launch {
+        _state.update { it.copy(screenSaving = true, errorMessage = null) }
+        try {
+            repo.regeneratePublicShare(screenId)
+            _state.update { it.copy(screenSaving = false, saveSuccess = true) }
+        } catch (e: Exception) {
+            _state.update { it.copy(screenSaving = false, errorMessage = e.message) }
+        }
+    }
+
     fun selectScreen(screenId: String) {
         screenObserveJobs.forEach { it.cancel() }
         val group = _state.value.screenGroups.find { screenId in it.screenIds }

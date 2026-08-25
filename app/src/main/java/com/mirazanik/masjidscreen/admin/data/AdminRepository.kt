@@ -1,5 +1,6 @@
 package com.mirazanik.masjidscreen.admin.data
 
+import android.util.Base64
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.mirazanik.masjidscreen.data.model.*
@@ -10,6 +11,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.security.SecureRandom
 import java.util.UUID
 
 data class AppVersionInfo(
@@ -93,12 +95,14 @@ class AdminRepository {
             ),
             SetOptions.merge()
         ).await()
+        refreshAllEnabledPublicSnapshots()
     }
 
     suspend fun saveTheme(themeKey: String) {
         rootRef.collection("data").document("config")
             .set(mapOf("activeTheme" to themeKey), SetOptions.merge())
             .await()
+        refreshAllEnabledPublicSnapshots()
     }
 
     suspend fun saveJamaat(times: JamaatTimes) {
@@ -238,6 +242,10 @@ class AdminRepository {
 
     suspend fun deleteScreen(screenId: String) {
         val screenDocRef = screensRef.document(screenId)
+        val shareToken = screenDocRef.get().await().getString("shareToken").orEmpty()
+        if (shareToken.isNotBlank()) {
+            publicSharesRef.document(shareToken).delete().await()
+        }
         // Delete known sub-documents and subcollections (best-effort client-side)
         screenDocRef.collection("data").document("jamaat_times").delete().await()
         val hadiths = screenDocRef.collection("hadiths").get().await()
@@ -245,6 +253,179 @@ class AdminRepository {
         val notices = screenDocRef.collection("notices").get().await()
         notices.documents.forEach { it.reference.delete().await() }
         screenDocRef.delete().await()
+    }
+
+    // ── Public viewer share ───────────────────────────────────────────────────
+
+    private val publicSharesRef get() = rootRef.collection("publicShares")
+
+    /** Enable public view and return the share token. Idempotent if already enabled. */
+    suspend fun enablePublicShare(screenId: String): String {
+        val screenDoc = screensRef.document(screenId).get().await()
+        val existing = screenDoc.getString("shareToken").orEmpty()
+        val alreadyEnabled = screenDoc.getBoolean("shareEnabled") == true
+        val token = if (alreadyEnabled && existing.isNotBlank()) {
+            existing
+        } else {
+            val newToken = existing.ifBlank { generateShareToken() }
+            screensRef.document(screenId).set(
+                mapOf(
+                    "shareToken" to newToken,
+                    "shareEnabled" to true,
+                ),
+                SetOptions.merge()
+            ).await()
+            newToken
+        }
+        refreshPublicSnapshot(screenId)
+        return token
+    }
+
+    /** Disable public view; keeps token so re-enable can reuse the same URL. */
+    suspend fun disablePublicShare(screenId: String) {
+        val token = screensRef.document(screenId).get().await().getString("shareToken").orEmpty()
+        screensRef.document(screenId).set(
+            mapOf("shareEnabled" to false),
+            SetOptions.merge()
+        ).await()
+        if (token.isNotBlank()) {
+            publicSharesRef.document(token).set(
+                mapOf("enabled" to false, "updatedAt" to System.currentTimeMillis()),
+                SetOptions.merge()
+            ).await()
+        }
+    }
+
+    /** Revoke link: delete snapshot and clear token so a new enable creates a fresh URL. */
+    suspend fun revokePublicShare(screenId: String) {
+        val token = screensRef.document(screenId).get().await().getString("shareToken").orEmpty()
+        if (token.isNotBlank()) {
+            publicSharesRef.document(token).delete().await()
+        }
+        screensRef.document(screenId).set(
+            mapOf(
+                "shareToken" to "",
+                "shareEnabled" to false,
+            ),
+            SetOptions.merge()
+        ).await()
+    }
+
+    /** Rotate token: old link stops working; returns the new token. */
+    suspend fun regeneratePublicShare(screenId: String): String {
+        val oldToken = screensRef.document(screenId).get().await().getString("shareToken").orEmpty()
+        if (oldToken.isNotBlank()) {
+            publicSharesRef.document(oldToken).delete().await()
+        }
+        val newToken = generateShareToken()
+        screensRef.document(screenId).set(
+            mapOf(
+                "shareToken" to newToken,
+                "shareEnabled" to true,
+            ),
+            SetOptions.merge()
+        ).await()
+        refreshPublicSnapshot(screenId)
+        return newToken
+    }
+
+    /**
+     * Writes a denormalized public snapshot (safe fields only).
+     * Call after content saves when sharing is enabled.
+     */
+    suspend fun refreshPublicSnapshot(screenId: String) {
+        val screenSnap = screensRef.document(screenId).get().await()
+        val d = screenSnap.data ?: return
+        if (d["shareEnabled"] as? Boolean != true) return
+        val token = d["shareToken"] as? String ?: return
+        if (token.isBlank()) return
+
+        val globalSnap = rootRef.collection("data").document("config").get().await().data ?: emptyMap()
+        val jamaatSnap = screensRef.document(screenId).collection("data").document("jamaat_times")
+            .get().await().data ?: emptyMap()
+        val hadithDocs = screensRef.document(screenId).collection("hadiths").get().await().documents
+        val noticeDocs = screensRef.document(screenId).collection("notices").get().await().documents
+
+        val screenName = d["name"] as? String ?: ""
+        val layout = ScreenLayout.fromMap(d)
+        val configPayload = mapOf(
+            "name" to ((d["mosqueName"] as? String)?.takeIf { it.isNotBlank() }
+                ?: globalSnap["name"] as? String ?: "Masjid"),
+            "address" to ((d["mosqueAddress"] as? String)?.takeIf { it.isNotBlank() }
+                ?: globalSnap["address"] as? String ?: ""),
+            "latitude" to ((d["latitude"] as? Number)?.toDouble()?.takeIf { it != 0.0 }
+                ?: (globalSnap["latitude"] as? Number)?.toDouble() ?: 23.777176),
+            "longitude" to ((d["longitude"] as? Number)?.toDouble()?.takeIf { it != 0.0 }
+                ?: (globalSnap["longitude"] as? Number)?.toDouble() ?: 90.399452),
+            "calculationMethod" to ((d["calculationMethod"] as? String)?.takeIf { it.isNotBlank() }
+                ?: globalSnap["calculationMethod"] as? String ?: "MWL"),
+            "madhab" to ((d["madhab"] as? String)?.takeIf { it.isNotBlank() }
+                ?: globalSnap["madhab"] as? String ?: "HANAFI"),
+            "language" to (d["language"] as? String ?: globalSnap["language"] as? String ?: "en"),
+            "hadithInterval" to ((d["hadithInterval"] as? Number)?.toInt()
+                ?: (globalSnap["hadithInterval"] as? Number)?.toInt() ?: 30),
+            "jamaatCountdownMins" to ((d["jamaatCountdownMins"] as? Number)?.toInt()
+                ?: (globalSnap["jamaatCountdownMins"] as? Number)?.toInt() ?: 3),
+            "hijriDateOffset" to ((d["hijriDateOffset"] as? Number)?.toInt()
+                ?: (globalSnap["hijriDateOffset"] as? Number)?.toInt() ?: 0),
+            "tableFontScale" to ((d["tableFontScale"] as? Number)?.toFloat()
+                ?: (globalSnap["tableFontScale"] as? Number)?.toFloat() ?: 1f),
+            "activeTheme" to (d["activeTheme"] as? String
+                ?: globalSnap["activeTheme"] as? String ?: "night_navy"),
+        )
+
+        val hadiths = hadithDocs.mapNotNull { doc ->
+            doc.data?.let { h ->
+                mapOf(
+                    "id" to doc.id,
+                    "translation" to (h["translation"] as? String ?: ""),
+                    "source" to (h["source"] as? String ?: ""),
+                    "narrator" to (h["narrator"] as? String ?: ""),
+                    "active" to (h["active"] as? Boolean ?: true),
+                )
+            }
+        }
+        val notices = noticeDocs.mapNotNull { doc ->
+            doc.data?.let { n ->
+                mapOf(
+                    "id" to doc.id,
+                    "text" to (n["text"] as? String ?: ""),
+                    "active" to (n["active"] as? Boolean ?: true),
+                    "priority" to ((n["priority"] as? Number)?.toInt() ?: 0),
+                )
+            }
+        }.sortedBy { it["priority"] as Int }
+
+        publicSharesRef.document(token).set(
+            mapOf(
+                "enabled" to true,
+                "screenId" to screenId,
+                "screenName" to screenName,
+                "updatedAt" to System.currentTimeMillis(),
+                "config" to configPayload,
+                "jamaat" to jamaatMap(mapJamaat(jamaatSnap)),
+                "hadiths" to hadiths,
+                "notices" to notices,
+                "layout" to layout.toMap(),
+            )
+        ).await()
+    }
+
+    private suspend fun maybeRefreshPublicSnapshot(screenId: String) {
+        runCatching { refreshPublicSnapshot(screenId) }
+    }
+
+    private suspend fun refreshAllEnabledPublicSnapshots() {
+        val snap = screensRef.whereEqualTo("shareEnabled", true).get().await()
+        snap.documents.forEach { doc ->
+            runCatching { refreshPublicSnapshot(doc.id) }
+        }
+    }
+
+    private fun generateShareToken(): String {
+        val bytes = ByteArray(16)
+        SecureRandom().nextBytes(bytes)
+        return Base64.encodeToString(bytes, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
     }
 
     // ── Per-screen config ─────────────────────────────────────────────────────
@@ -291,6 +472,7 @@ class AdminRepository {
             ) + config.layout.toMap(),
             SetOptions.merge()
         ).await()
+        maybeRefreshPublicSnapshot(screenId)
     }
 
     suspend fun refreshScreens(): List<ScreenInfo> {
@@ -313,6 +495,7 @@ class AdminRepository {
     suspend fun saveScreenJamaat(screenId: String, times: JamaatTimes) {
         screensRef.document(screenId).collection("data").document("jamaat_times")
             .set(jamaatMap(times)).await()
+        maybeRefreshPublicSnapshot(screenId)
     }
 
     // ── Per-screen hadiths ────────────────────────────────────────────────────
@@ -329,20 +512,24 @@ class AdminRepository {
         screensRef.document(screenId).collection("hadiths").add(
             mapOf("translation" to translation, "source" to source, "narrator" to narrator, "active" to true)
         ).await()
+        maybeRefreshPublicSnapshot(screenId)
     }
 
     suspend fun updateScreenHadith(screenId: String, id: String, translation: String, source: String, narrator: String, active: Boolean) {
         screensRef.document(screenId).collection("hadiths").document(id).set(
             mapOf("translation" to translation, "source" to source, "narrator" to narrator, "active" to active)
         ).await()
+        maybeRefreshPublicSnapshot(screenId)
     }
 
     suspend fun toggleScreenHadithActive(screenId: String, id: String, active: Boolean) {
         screensRef.document(screenId).collection("hadiths").document(id).update("active", active).await()
+        maybeRefreshPublicSnapshot(screenId)
     }
 
     suspend fun deleteScreenHadith(screenId: String, id: String) {
         screensRef.document(screenId).collection("hadiths").document(id).delete().await()
+        maybeRefreshPublicSnapshot(screenId)
     }
 
     // ── Per-screen notices ────────────────────────────────────────────────────
@@ -360,16 +547,19 @@ class AdminRepository {
         screensRef.document(screenId).collection("notices").add(
             mapOf("text" to text, "active" to true, "priority" to priority)
         ).await()
+        maybeRefreshPublicSnapshot(screenId)
     }
 
     suspend fun updateScreenNotice(screenId: String, id: String, text: String, active: Boolean, priority: Int) {
         screensRef.document(screenId).collection("notices").document(id).set(
             mapOf("text" to text, "active" to active, "priority" to priority)
         ).await()
+        maybeRefreshPublicSnapshot(screenId)
     }
 
     suspend fun deleteScreenNotice(screenId: String, id: String) {
         screensRef.document(screenId).collection("notices").document(id).delete().await()
+        maybeRefreshPublicSnapshot(screenId)
     }
 
     // ── App settings ──────────────────────────────────────────────────────────
@@ -639,6 +829,8 @@ class AdminRepository {
         displayHeightPx = (d["displayHeightPx"] as? Number)?.toInt() ?: 0,
         displayDensity = (d["displayDensity"] as? Number)?.toFloat() ?: 0f,
         displayFontScale = (d["displayFontScale"] as? Number)?.toFloat() ?: 0f,
+        shareToken = d["shareToken"] as? String ?: "",
+        shareEnabled = d["shareEnabled"] as? Boolean ?: false,
     )
 
     private fun mapNotice(id: String, d: Map<String, Any>) = Notice(

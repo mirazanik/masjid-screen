@@ -7,6 +7,42 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.mirazanik.masjidscreen.ui.theme.banglaTypography
 
+private val AuthGreen = Color(0xFF4CAF50)
+
+private val AuthDarkColorScheme = darkColorScheme(
+    primary = AuthGreen,
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFF1B5E20),
+    onPrimaryContainer = Color(0xFFC8E6C9),
+    secondary = Color(0xFF81C784),
+    onSecondary = Color(0xFF003910),
+    secondaryContainer = Color(0xFF1B5E20),
+    onSecondaryContainer = Color(0xFFC8E6C9),
+    tertiary = Color(0xFFA5D6A7),
+    onTertiary = Color(0xFF003910),
+    tertiaryContainer = Color(0xFF2E7D32),
+    onTertiaryContainer = Color(0xFFE8F5E9),
+    background = Color(0xFF0A0A0A),
+    onBackground = Color(0xFFE8E8E8),
+    surface = Color(0xFF121412),
+    onSurface = Color(0xFFE8E8E8),
+    surfaceVariant = Color(0xFF1E221E),
+    onSurfaceVariant = Color(0xFFB5B5B5),
+    surfaceContainer = Color(0xFF1A1C1A),
+    surfaceContainerHigh = Color(0xFF222522),
+    surfaceContainerHighest = Color(0xFF2A2E2A),
+    outline = AuthGreen,
+    outlineVariant = Color(0xFF3D4A3D),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6),
+    inverseSurface = Color(0xFFE8E8E8),
+    inverseOnSurface = Color(0xFF1A1A1A),
+    inversePrimary = Color(0xFF2E7D32),
+    scrim = Color(0xFF000000),
+)
+
 private val AdminDarkColorScheme = darkColorScheme(
     primary = Color(0xFFE9C46A),
     onPrimary = Color(0xFF3D2C00),
@@ -53,6 +89,16 @@ private val AdminShapes = Shapes(
 fun AdminTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = AdminDarkColorScheme,
+        typography = banglaTypography(),
+        shapes = AdminShapes,
+        content = content
+    )
+}
+
+@Composable
+fun AuthTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = AuthDarkColorScheme,
         typography = banglaTypography(),
         shapes = AdminShapes,
         content = content

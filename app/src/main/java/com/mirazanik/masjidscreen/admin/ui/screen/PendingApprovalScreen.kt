@@ -1,18 +1,27 @@
 package com.mirazanik.masjidscreen.admin.ui.screen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HourglassEmpty
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.mirazanik.masjidscreen.R
 
 @Composable
 fun PendingApprovalScreen(onSignOut: () -> Unit) {
+    val context = LocalContext.current
+    val formUrl = stringResource(R.string.install_request_form_url)
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -51,9 +60,34 @@ fun PendingApprovalScreen(onSignOut: () -> Unit) {
                 textAlign = TextAlign.Center
             )
 
+            Text(
+                "While you wait, please submit where you want to install the app and your mobile number so we can complete setup.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+
             Spacer(Modifier.height(8.dp))
 
-            OutlinedButton(onClick = onSignOut) {
+            Button(
+                onClick = {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(formUrl)))
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    Icons.Default.OpenInNew,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Fill Installation Form")
+            }
+
+            OutlinedButton(
+                onClick = onSignOut,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text("Sign Out")
             }
         }

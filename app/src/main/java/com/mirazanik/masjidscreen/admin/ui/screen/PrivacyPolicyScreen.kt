@@ -96,6 +96,7 @@ fun PrivacyPolicyBody() {
             "Mosque content you enter: mosque name and address, latitude and longitude (typed in settings — the app does not use GPS), prayer calculation settings, jamaat times, hadiths, and notices.\n\n" +
             "Display devices: a generated device ID, pairing status, app version, last-seen time, and screen size. These keep the TV paired and in sync.\n\n" +
             "Notifications: a Firebase Cloud Messaging token so admins can receive alerts.\n\n" +
+            "Diagnostics: if the app crashes, a report is sent to Firebase Crashlytics. It includes the stack trace, app version, device model, OS version, and the generated device ID. It does not include mosque content, passwords, or advertising IDs.\n\n" +
             "Camera: used only to scan a pairing QR code. Photos and videos are not saved, uploaded, or shared."
     )
     PolicySection(
@@ -104,11 +105,11 @@ fun PrivacyPolicyBody() {
     )
     PolicySection(
         "How we use data",
-        "To create and protect admin accounts, sync mosque content to display screens, calculate prayer times from the location you enter, pair devices, and send admin notifications."
+        "To create and protect admin accounts, sync mosque content to display screens, calculate prayer times from the location you enter, pair devices, send admin notifications, and diagnose crashes so the display stays stable."
     )
     PolicySection(
         "Where data is stored",
-        "Account and mosque data are stored in Google Firebase (Authentication, Cloud Firestore, and Cloud Messaging). Google processes this data on our behalf. Data is sent over HTTPS."
+        "Account and mosque data are stored in Google Firebase (Authentication, Cloud Firestore, and Cloud Messaging). Crash reports are stored in Firebase Crashlytics. Google processes this data on our behalf. Data is sent over HTTPS."
     )
     PolicySection(
         "Sharing",

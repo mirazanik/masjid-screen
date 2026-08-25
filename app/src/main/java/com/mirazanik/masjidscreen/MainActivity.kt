@@ -50,16 +50,14 @@ class MainActivity : ComponentActivity() {
     private var showAdmin by mutableStateOf(false)
     private var pendingUnpairExit by mutableStateOf(false)
     private var adminLandscape by mutableStateOf(false)
+    private var immersiveEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowInsetsControllerCompat(window, window.decorView).apply {
-            hide(WindowInsetsCompat.Type.systemBars())
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
+        setImmersiveMode(true)
 
         setContent {
             val state by viewModel.state.collectAsState()
@@ -73,10 +71,22 @@ class MainActivity : ComponentActivity() {
             val openAdmin = showAdmin || (isAdminLoggedIn && deviceUnpaired)
             val restoringAdminSession = authState is AdminAuthState.Loading && deviceUnpaired
 
+            SideEffect {
+                setImmersiveMode(!openAdmin || adminLandscape)
+            }
+
+            LaunchedEffect(openAdmin, adminLandscape) {
+                requestedOrientation = when {
+                    !openAdmin || adminLandscape -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    else -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                }
+            }
+
             LaunchedEffect(pairingState, pendingUnpairExit) {
                 if (pendingUnpairExit && pairingState is ScreenPairingState.Unpaired) {
                     pendingUnpairExit = false
                     showAdmin = false
+                    adminLandscape = false
                     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                 }
             }
@@ -86,13 +96,6 @@ class MainActivity : ComponentActivity() {
 
             when {
                 openAdmin -> {
-                    SideEffect {
-                        requestedOrientation = if (adminLandscape) {
-                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                        } else {
-                            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                        }
-                    }
                     AdminTheme {
                         AdminPanel(
                             authViewModel = adminAuthViewModel,
@@ -104,7 +107,14 @@ class MainActivity : ComponentActivity() {
                                 viewModel.unpairFromThisDevice()
                             },
                             onClearUnpairError = viewModel::clearUnpairError,
-                            onRequestLandscape = { adminLandscape = it },
+                            onRequestLandscape = { landscape ->
+                                adminLandscape = landscape
+                                requestedOrientation = if (landscape) {
+                                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                                } else {
+                                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                                }
+                            },
                             onBack = {
                                 showAdmin = false
                                 adminLandscape = false
@@ -125,6 +135,7 @@ class MainActivity : ComponentActivity() {
                             state = state,
                             onEnterAdmin = {
                                 showAdmin = true
+                                adminLandscape = false
                                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                             },
                             onViewportMeasured = viewModel::reportDisplaySize
@@ -148,12 +159,32 @@ class MainActivity : ComponentActivity() {
                             onClearError = viewModel::clearPairingError,
                             onEnterAdmin = {
                                 showAdmin = true
+                                adminLandscape = false
                                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                             }
                         )
                     }
                 }
             }
+        }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) setImmersiveMode(immersiveEnabled)
+    }
+
+    private fun setImmersiveMode(enabled: Boolean) {
+        immersiveEnabled = enabled
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        if (enabled) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            controller.show(WindowInsetsCompat.Type.systemBars())
         }
     }
 }

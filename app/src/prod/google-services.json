@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "21430945000",
+    "project_id": "mosque-live-screen",
+    "storage_bucket": "mosque-live-screen.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:21430945000:android:0afcaf77c768e8c653f55d",
+        "android_client_info": {
+          "package_name": "com.mirazanik.masjidscreen"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "21430945000-57t9q618og05p763oa2loolj06v7vuvm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirazanik.masjidscreen",
+            "certificate_hash": "54512f7144a5fd2134d4e286b9a41e583f4acd38"
+          }
+        },
+        {
+          "client_id": "21430945000-a3eged7n39si8blvibujcf19n0mb0mq4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirazanik.masjidscreen",
+            "certificate_hash": "bd643db5a191bfb2d5d1375584638256aae51ae5"
+          }
+        },
+        {
+          "client_id": "21430945000-feqepnimbadh6voqcal018i1ibms67bv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirazanik.masjidscreen",
+            "certificate_hash": "4bcbfbe495f58b2ca980dc4d1ca810be297462c5"
+          }
+        },
+        {
+          "client_id": "21430945000-78vf2mbcijf415nv40osh1370uv0k14j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByD6zW5li8ruTC1b8ObSN3yOvRuzGveHY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "21430945000-78vf2mbcijf415nv40osh1370uv0k14j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

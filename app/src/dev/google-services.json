@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "653671016398",
+    "project_id": "mosque-live-screen-dev",
+    "storage_bucket": "mosque-live-screen-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:653671016398:android:988f52157efc5c9f82ed9f",
+        "android_client_info": {
+          "package_name": "com.mirazanik.masjidscreen.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "653671016398-1q1ge225mrb4dreis08gce733jnn8bg3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirazanik.masjidscreen.dev",
+            "certificate_hash": "4bcbfbe495f58b2ca980dc4d1ca810be297462c5"
+          }
+        },
+        {
+          "client_id": "653671016398-akk2emu4ae6tdae6do7q63nlgd3jinjb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mirazanik.masjidscreen.dev",
+            "certificate_hash": "54512f7144a5fd2134d4e286b9a41e583f4acd38"
+          }
+        },
+        {
+          "client_id": "653671016398-jlgp508m7ejfdf412jd8erba96rpji8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAoTvZ67lM5BX1QdyAFhCEjXxuFutu9DHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "653671016398-jlgp508m7ejfdf412jd8erba96rpji8g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

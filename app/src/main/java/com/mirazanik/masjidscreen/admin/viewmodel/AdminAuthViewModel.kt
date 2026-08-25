@@ -89,6 +89,18 @@ class AdminAuthViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+    fun startGoogleSignIn() {
+        _authState.value = AdminAuthState.Loading
+    }
+
+    fun abortGoogleSignIn(message: String? = null) {
+        _authState.value = if (message.isNullOrBlank()) {
+            AdminAuthState.Unauthenticated
+        } else {
+            AdminAuthState.Error(message)
+        }
+    }
+
     fun loginWithGoogle(getIdToken: suspend () -> String) {
         viewModelScope.launch {
             _authState.value = AdminAuthState.Loading

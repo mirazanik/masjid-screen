@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import com.google.firebase.FirebaseApp
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.mirazanik.masjidscreen.admin.viewmodel.AdminPanelViewModel
 import com.mirazanik.masjidscreen.data.remote.FirestoreProvider
 import com.mirazanik.masjidscreen.util.DeviceManager
@@ -23,13 +24,34 @@ class MosqueApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
+        setupCrashlytics()
         // Touch Firestore first so cache settings are applied before any repository query.
         FirestoreProvider.instance
         createNotificationChannels()
         applicationScope.launch {
             deviceId = DeviceManager.getOrCreateDeviceId(this@MosqueApplication)
+            crashlyticsOrNull()?.apply {
+                setUserId(deviceId)
+                setCustomKey("device_id", deviceId)
+            }
         }
         startTimeSync()
+    }
+
+    private fun setupCrashlytics() {
+        val crashlytics = crashlyticsOrNull() ?: return
+        // prodDebug stays off so local runs against live Firebase do not fill the dashboard.
+        val collectCrashes = !BuildConfig.DEBUG || BuildConfig.FLAVOR == "dev"
+        crashlytics.setCrashlyticsCollectionEnabled(collectCrashes)
+        crashlytics.setCustomKey("flavor", BuildConfig.FLAVOR)
+    }
+
+    private fun crashlyticsOrNull(): FirebaseCrashlytics? = try {
+        FirebaseCrashlytics.getInstance()
+    } catch (_: IllegalStateException) {
+        null
+    } catch (_: NullPointerException) {
+        null
     }
 
     private fun createNotificationChannels() {

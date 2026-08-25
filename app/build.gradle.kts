@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 val localProperties = Properties().apply {
@@ -41,8 +42,8 @@ android {
         applicationId = "com.mirazanik.masjidscreen"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 6
+        versionName = "2.1.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
     }
@@ -53,9 +54,19 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
+            buildConfigField(
+                "String",
+                "PUBLIC_VIEWER_BASE_URL",
+                "\"https://mosque.mirazanik.com\""
+            )
         }
         create("prod") {
             dimension = "environment"
+            buildConfigField(
+                "String",
+                "PUBLIC_VIEWER_BASE_URL",
+                "\"https://mosque.mirazanik.com\""
+            )
         }
     }
 
@@ -78,6 +89,11 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             signingConfig = signingConfigs.getByName("shared")
+            // Package native symbol tables into the AAB when a .so still has
+            // them. Current deps (ML Kit, CameraX) ship already-stripped libs.
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -138,6 +154,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.crashlytics)
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
@@ -196,5 +213,23 @@ androidComponents {
         if (isDev && !devGoogleServices.isFile) {
             builder.enable = false
         }
+    }
+}
+
+// Android Studio often writes empty systemProp.http(s).proxyHost into
+// ~/.gradle/gradle.properties. Crashlytics then treats "" as a proxy and
+// fails mapping upload with "Host name may not be empty".
+fun clearBlankJvmProxySettings() {
+    listOf("http.proxyHost", "https.proxyHost", "proxyHost").forEach { key ->
+        if (System.getProperty(key).isNullOrBlank()) {
+            System.clearProperty(key)
+        }
+    }
+}
+
+clearBlankJvmProxySettings()
+tasks.configureEach {
+    if (name.startsWith("uploadCrashlyticsMappingFile")) {
+        doFirst { clearBlankJvmProxySettings() }
     }
 }

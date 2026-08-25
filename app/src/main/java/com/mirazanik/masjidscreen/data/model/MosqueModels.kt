@@ -95,10 +95,14 @@ data class ScreenInfo(
     val displayHeightPx: Int = 0,
     val displayDensity: Float = 0f,
     val displayFontScale: Float = 0f,
+    /** Unguessable public viewer token; empty when sharing is off. */
+    val shareToken: String = "",
+    val shareEnabled: Boolean = false,
 ) {
     val isOnline: Boolean get() = lastSeenMs > 0L &&
         (System.currentTimeMillis() - lastSeenMs) in 0L until 5 * 60_000L
     val isPaired: Boolean get() = pairedDeviceId.isNotBlank()
+    val hasPublicShare: Boolean get() = shareEnabled && shareToken.isNotBlank()
 }
 
 data class ScreenLayout(

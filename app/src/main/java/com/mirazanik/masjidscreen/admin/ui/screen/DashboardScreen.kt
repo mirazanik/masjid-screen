@@ -160,7 +160,11 @@ fun DashboardScreen(
         },
         containerColor = MaterialTheme.colorScheme.background,
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .then(if (screenManageOpen) Modifier else Modifier.padding(padding))
+        ) {
             when (topTab) {
                 0 -> ScreensScreen(
                     state = state,

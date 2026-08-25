@@ -1,4 +1,6 @@
 <resources>
-    <string name="app_name">MasjidScreen</string>
+    <string name="app_name">Masjid Screen</string>
     <string name="privacy_policy_url">https://mirazanik.github.io/masjid-screen/privacy-policy.html</string>
+    <!-- Replace with your Google Form "Send" / responder link after creating the form -->
+    <string name="install_request_form_url">https://forms.gle/hwFAQKFMAUtwt3KH8</string>
 </resources>
