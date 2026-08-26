@@ -2,7 +2,8 @@
 
 Phone/browser viewer for a mosque screen. The site is hosted on **Cloudflare Pages** (free). **Firebase is only used for Firestore** (real-time content sync)—not for hosting.
 
-Admins enable **Public view** in the Android app, then share the QR code or link.
+- **Home** (`https://mosque.mirazanik.com/`) — Play Store download, how to use, and documentation.
+- **Share links** (`/s/<token>`) — live public display. Admins enable **Public view** in the Android app, then share the QR code or link.
 
 ---
 

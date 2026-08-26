@@ -6,6 +6,7 @@ import {
   renderError,
   renderLoading,
 } from "./display";
+import { renderLanding } from "./landing";
 import { setupPwaInstall } from "./pwa-install";
 
 const root = document.querySelector<HTMLElement>("#app");
@@ -14,21 +15,14 @@ if (!root) {
 }
 
 let currentLanguage = "en";
-const pwa = setupPwaInstall(() => currentLanguage);
 
 const token = parseShareTokenFromPath(window.location.pathname);
 
 if (!token) {
   const last = readLastShareToken();
-  if (last) {
-    window.location.replace(`/s/${last}`);
-  } else {
-    renderError(
-      root,
-      "Open a share link from the MasjidScreen admin panel (or scan the QR code)."
-    );
-  }
+  renderLanding(root, { lastSharePath: last ? `/s/${last}` : null });
 } else {
+  const pwa = setupPwaInstall(() => currentLanguage);
   const controller = new DisplayController(root);
   const cached = readCachedShare(token);
   if (cached) {

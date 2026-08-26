@@ -5,7 +5,13 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "favicon-32.png", "icons/icon-192.png", "icons/icon-512.png"],
+      includeAssets: [
+        "favicon.svg",
+        "favicon-32.png",
+        "icons/icon-192.png",
+        "icons/icon-512.png",
+        "images/feature-graphic.png",
+      ],
       manifest: {
         name: "Masjid Screen",
         short_name: "Masjid Screen",
