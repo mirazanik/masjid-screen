@@ -23,6 +23,14 @@ const SHOT = {
   makruh: "/images/makruh-time.jpg",
 } as const;
 
+const LANDSCAPE_SLIDES = [
+  { src: SHOT.banner, key: "banner" },
+  { src: SHOT.display, key: "display" },
+  { src: SHOT.jamaatLive, key: "jamaat" },
+  { src: SHOT.makruh, key: "makruh" },
+  { src: SHOT.connect, key: "connect" },
+] as const;
+
 type Copy = {
   langLabel: string;
   title: string;
@@ -34,6 +42,9 @@ type Copy = {
   continueLast: string;
   navHow: string;
   navDocs: string;
+  carouselPrev: string;
+  carouselNext: string;
+  carouselSlides: { alt: string; caption: string }[];
   whatTitle: string;
   whatItems: { title: string; text: string; src: string; alt: string; kind: ShotKind }[];
   howTitle: string;
@@ -54,7 +65,6 @@ type Copy = {
     alt: string;
     kind: ShotKind;
   }[];
-  fullDocs: string;
   privacy: string;
   github: string;
   footer: string;
@@ -73,6 +83,27 @@ const copy: Record<Lang, Copy> = {
     continueLast: "Open last mosque display",
     navHow: "How to use",
     navDocs: "Documentation",
+    carouselPrev: "Previous image",
+    carouselNext: "Next image",
+    carouselSlides: [
+      { alt: "MasjidScreen mosque TV display", caption: "Mosque TV display" },
+      {
+        alt: "Live display with Hijri and Gregorian dates, clock, sun times, current waqt, prayer table, hadith, and notice",
+        caption: "Prayer display",
+      },
+      {
+        alt: "Display overlay counting down to Fajr jamaat with a silent-phone reminder",
+        caption: "Jamaat countdown",
+      },
+      {
+        alt: "Makruh sunset warning on the display with Asr still allowed until sunset",
+        caption: "Makruh (prohibited) times",
+      },
+      {
+        alt: "Connect Screen with QR code, pairing code, Connect my Masjid, and Admin",
+        caption: "Connect Screen",
+      },
+    ],
     whatTitle: "What it does",
     whatItems: [
       {
@@ -214,62 +245,62 @@ const copy: Record<Lang, Copy> = {
         kind: "wide",
         text: "During sunrise, zawal, and sunset the display shows a warning: prayer is not allowed in that window. For sunset it notes that today’s Asr may still be performed until the listed end time. Ishraq, zawal, and makruh times also appear as small notes in the table.",
       },
-      {
-        title: "Connect Screen",
-        src: SHOT.connect,
-        alt: "Unpaired TV Connect Screen",
-        kind: "wide",
-        text: "First launch (or after unpair) shows Connect Screen. Three ways in: admin scans the QR, someone types a pairing code, or Connect my Masjid opens a public share. Admin on this screen signs in without pairing.",
-      },
-      {
-        title: "Admin sign-in",
-        src: SHOT.login,
-        alt: "Admin login screen",
-        kind: "phone",
-        text: "Same APK as the TV. Email/password or Google. Only signed-in mosque admins can change content. Privacy policy is linked on this screen.",
-      },
-      {
-        title: "Screens list",
-        src: SHOT.screens,
-        alt: "Admin Panel listing paired screens",
-        kind: "phone",
-        text: "Super Admin sees all TVs, online status, last seen, and app version. Gear opens that screen’s Jamaat / Hadith / Notices / Settings / Share tabs. Users, Groups, and Global are for account and mosque-wide settings.",
-      },
-      {
-        title: "Jamaat editor",
-        src: SHOT.jamaat,
-        alt: "Jamaat times editor",
-        kind: "phone",
-        text: "Waqt is calculated on the device from the coordinates and method in Settings (not GPS). Jamaat times are whatever you type. Optional notes can appear on the TV. Save writes to the cloud; the display updates in real time and keeps working offline after the first sync.",
-      },
-      {
-        title: "Hadiths",
-        src: SHOT.hadith,
-        alt: "Hadith manager",
-        kind: "phone",
-        text: "Hadiths rotate on the TV at the interval you set. Hide a hadith without deleting it. Text can be English or Bangla — the display shows what you entered.",
-      },
-      {
-        title: "Notices",
-        src: SHOT.notices,
-        alt: "Notices manager",
-        kind: "phone",
-        text: "Notices scroll along the bottom of the TV. Add, hide, or delete from this tab. Keep them short so they read well on a ticker.",
-      },
-      {
-        title: "Language and layout",
-        src: SHOT.language,
-        alt: "Settings for language, countdown, Hijri offset, and layout",
-        kind: "phone",
-        text: "Display Language switches the whole TV (and public viewer) between English and Bangla, including dates and numerals. Jamaat countdown, Hijri ± days, and column width sliders live here. Reset layout to default restores the stock split.",
-      },
-      {
-        title: "Public viewer",
-        src: SHOT.share,
-        alt: "Public view QR and link",
-        kind: "phone",
-        text: "The share URL is not the mosque ID. Clock and prayer times update on the phone; content refreshes when you save. New QR invalidates the old link. Viewers do not subscribe to TV heartbeat documents, so many phones do not raise Firebase cost.",
-      },
+      // {
+      //   title: "Connect Screen",
+      //   src: SHOT.connect,
+      //   alt: "Unpaired TV Connect Screen",
+      //   kind: "wide",
+      //   text: "First launch (or after unpair) shows Connect Screen. Three ways in: admin scans the QR, someone types a pairing code, or Connect my Masjid opens a public share. Admin on this screen signs in without pairing.",
+      // },
+      // {
+      //   title: "Admin sign-in",
+      //   src: SHOT.login,
+      //   alt: "Admin login screen",
+      //   kind: "phone",
+      //   text: "Same APK as the TV. Email/password or Google. Only signed-in mosque admins can change content. Privacy policy is linked on this screen.",
+      // },
+      // {
+      //   title: "Screens list",
+      //   src: SHOT.screens,
+      //   alt: "Admin Panel listing paired screens",
+      //   kind: "phone",
+      //   text: "Super Admin sees all TVs, online status, last seen, and app version. Gear opens that screen’s Jamaat / Hadith / Notices / Settings / Share tabs. Users, Groups, and Global are for account and mosque-wide settings.",
+      // },
+      // {
+      //   title: "Jamaat editor",
+      //   src: SHOT.jamaat,
+      //   alt: "Jamaat times editor",
+      //   kind: "phone",
+      //   text: "Waqt is calculated on the device from the coordinates and method in Settings (not GPS). Jamaat times are whatever you type. Optional notes can appear on the TV. Save writes to the cloud; the display updates in real time and keeps working offline after the first sync.",
+      // },
+      // {
+      //   title: "Hadiths",
+      //   src: SHOT.hadith,
+      //   alt: "Hadith manager",
+      //   kind: "phone",
+      //   text: "Hadiths rotate on the TV at the interval you set. Hide a hadith without deleting it. Text can be English or Bangla — the display shows what you entered.",
+      // },
+      // {
+      //   title: "Notices",
+      //   src: SHOT.notices,
+      //   alt: "Notices manager",
+      //   kind: "phone",
+      //   text: "Notices scroll along the bottom of the TV. Add, hide, or delete from this tab. Keep them short so they read well on a ticker.",
+      // },
+      // {
+      //   title: "Language and layout",
+      //   src: SHOT.language,
+      //   alt: "Settings for language, countdown, Hijri offset, and layout",
+      //   kind: "phone",
+      //   text: "Display Language switches the whole TV (and public viewer) between English and Bangla, including dates and numerals. Jamaat countdown, Hijri ± days, and column width sliders live here. Reset layout to default restores the stock split.",
+      // },
+      // {
+      //   title: "Public viewer",
+      //   src: SHOT.share,
+      //   alt: "Public view QR and link",
+      //   kind: "phone",
+      //   text: "The share URL is not the mosque ID. Clock and prayer times update on the phone; content refreshes when you save. New QR invalidates the old link. Viewers do not subscribe to TV heartbeat documents, so many phones do not raise Firebase cost.",
+      // },
       {
         title: "Requirements",
         src: SHOT.banner,
@@ -278,7 +309,6 @@ const copy: Record<Lang, Copy> = {
         text: "Android 8.0 (API 26) or newer. A landscape tablet, TV box, or monitor is best for the mosque screen. Admin works on a phone. After the first sync the display keeps clock, waqt, and countdown without internet.",
       },
     ],
-    fullDocs: "Technical documentation",
     privacy: "Privacy policy",
     github: "GitHub",
     footer: "MasjidScreen · mosque.mirazanik.com",
@@ -286,34 +316,55 @@ const copy: Record<Lang, Copy> = {
   bn: {
     langLabel: "English",
     title: "MasjidScreen",
-    tagline: "মসজিদের টিভি, ট্যাবলেট ও ফোনের জন্য লাইভ নামাজের ডিসপ্লে।",
+    tagline: "মসজিদের টিভি, ট্যাবলেট আর ফোনে নামাজের সময় লাইভে দেখান।",
     subtitle:
-      "মাউন্ট করা স্ক্রিনে নামাজের সময়, জামাত, হিজরি তারিখ, হাদিস ও নোটিশ দেখান। একই অ্যাপ থেকে সব পরিচালনা করুন।",
+      "পর্দায় ঘড়ি, নামাজের সময়, জামাত, হিজরি তারিখ, হাদিস আর নোটিশ থাকে। ফোন থেকেই সব সেট করা যায়।",
     getOnPlay: "ডাউনলোড করুন",
     playStore: "Google Play",
-    openPlay: "Play Store-এ খুলুন",
-    continueLast: "শেষ মসজিদ ডিসপ্লে খুলুন",
+    openPlay: "প্লে স্টোরে খুলুন",
+    continueLast: "আগের মসজিদের পর্দা খুলুন",
     navHow: "কীভাবে ব্যবহার করবেন",
     navDocs: "ডকুমেন্টেশন",
+    carouselPrev: "আগের ছবি",
+    carouselNext: "পরের ছবি",
+    carouselSlides: [
+      { alt: "MasjidScreen মসজিদের টিভি পর্দা", caption: "মসজিদের টিভি পর্দা" },
+      {
+        alt: "হিজরি ও ইংরেজি তারিখ, ঘড়ি, সূর্যের সময়, চলতি ওয়াক্ত, নামাজের তালিকা, হাদিস ও নোটিশসহ লাইভ পর্দা",
+        caption: "নামাজের পর্দা",
+      },
+      {
+        alt: "ফজরের জামাতের কাউন্টডাউন ও মোবাইল সাইলেন্ট রাখার অনুরোধ",
+        caption: "জামাতের কাউন্টডাউন",
+      },
+      {
+        alt: "সূর্যাস্তের মাকরূহ সতর্কতা — আসর এখনও আদায় করা যাবে",
+        caption: "মাকরূহ সময়",
+      },
+      {
+        alt: "কানেক্ট স্ক্রিন — কিউআর, পেয়ারিং কোড, Connect my Masjid ও Admin",
+        caption: "কানেক্ট স্ক্রিন",
+      },
+    ],
     whatTitle: "এটি কী করে",
     whatItems: [
       {
-        title: "মসজিদ টিভি",
-        text: "ফুলস্ক্রিন ল্যান্ডস্কেপ: ঘড়ি, পরবর্তী নামাজ, ওয়াক্ত ও জামাতের টেবিল, হাদিস এবং স্ক্রলিং নোটিশ।",
+        title: "মসজিদের টিভি",
+        text: "পুরো পর্দায় ঘড়ি, পরের নামাজ, ওয়াক্ত ও জামাতের তালিকা, হাদিস আর নিচে চলমান নোটিশ।",
         src: SHOT.display,
-        alt: "ঘড়ি, নামাজের টেবিল, হাদিস ও নোটিশসহ মসজিদ ডিসপ্লে",
+        alt: "ঘড়ি, নামাজের তালিকা, হাদিস ও নোটিশসহ মসজিদের পর্দা",
         kind: "wide",
       },
       {
-        title: "অ্যাডমিন ফোন",
-        text: "একই অ্যাপে সাইন ইন করে জামাত, হাদিস, নোটিশ, ভাষা ও মসজিদের সেটিংস বদলান। পরিবর্তন তাৎক্ষণিক দেখা যায়।",
+        title: "অ্যাডমিনের ফোন",
+        text: "ফোনে অ্যাডমিন হিসেবে ঢুকে জামাত, হাদিস, নোটিশ, ভাষা আর মসজিদের সেটিংস বদলান। সাথে সাথে টিভিতে দেখা যায়।",
         src: SHOT.login,
         alt: "মসজিদ অ্যাডমিন সাইন-ইন স্ক্রিন",
         kind: "phone",
       },
       {
         title: "পাবলিক ভিউ",
-        text: "কিউআর বা লিংক শেয়ার করুন — মুসল্লিরা ফোনের ব্রাউজারে একই ডিসপ্লে খুলতে পারেন।",
+        text: "কিউআর কোড বা লিংক দিয়ে শেয়ার করুন। মুসল্লিরা নিজের ফোনে একই পর্দা দেখতে পারবেন।",
         src: SHOT.share,
         alt: "কিউআর ও লিংকসহ পাবলিক ভিউ শেয়ার স্ক্রিন",
         kind: "phone",
@@ -321,71 +372,71 @@ const copy: Record<Lang, Copy> = {
     ],
     howTitle: "কীভাবে ব্যবহার করবেন",
     howIntro:
-      "মসজিদের টিভি এবং অ্যাডমিন ফোনে একই অ্যাপ ইনস্টল করুন। একবার পেয়ার করুন — তারপর ফোন থেকে কনটেন্ট বদলালে টিভি লাইভে আপডেট হয়।",
+      "মসজিদের টিভি আর অ্যাডমিনের ফোনে একই অ্যাপ বসান। একবার জোড়া লাগালে, ফোন থেকে যা বদলাবেন তা টিভিতে সঙ্গে সঙ্গে চলে আসবে।",
     howSteps: [
       {
-        title: "১. মসজিদের স্ক্রিন সংযোগ করুন",
+        title: "১. মসজিদের পর্দা জোড়া লাগান",
         src: SHOT.connect,
         alt: "কানেক্ট স্ক্রিন — কিউআর, পেয়ারিং কোড, Connect my Masjid ও Admin",
         kind: "wide",
         steps: [
-          "যে টিভি বক্স, ট্যাবলেট বা ফোন মাউন্ট করবেন, সেখানে Google Play থেকে MasjidScreen ইনস্টল করুন। ল্যান্ডস্কেপে রাখুন।",
-          "আনপেয়ারড ডিভাইসে Connect Screen দেখায়: বামে কিউআর, সাথে Connect my Masjid, পেয়ারিং কোড, Admin এবং Connect।",
-          "অ্যাডমিন কিউআর স্ক্যান করুন, অথবা ৬-সংখ্যার কোড লিখে Connect চাপুন।",
-          "এই ডিভাইসে পাবলিক শেয়ার দেখতে Connect my Masjid চাপুন এবং পাবলিক-ভিউ কিউআর স্ক্যান করুন (Admin → Screens → Share)।",
+          "যে টিভি বক্স, ট্যাবলেট বা ফোন মসজিদে লাগাবেন, সেখানে গুগল প্লে থেকে MasjidScreen বসান। পর্দা আড়াআড়ি রাখুন।",
+          "জোড়া না লাগানো ডিভাইসে Connect Screen আসে—বামে কিউআর কোড, পাশে Connect my Masjid, পেয়ারিং কোড, Admin আর Connect।",
+          "অ্যাডমিন কিউআর কোড স্ক্যান করুন, অথবা ছয় অঙ্কের কোড লিখে Connect চাপুন।",
+          "এই ডিভাইসে পাবলিক লিংক খুলতে চাইলে Connect my Masjid চাপুন, তারপর Admin → Screens → Share থেকে কিউআর স্ক্যান করুন।",
         ],
       },
       {
-        title: "২. অ্যাডমিন হিসেবে সাইন ইন",
+        title: "২. অ্যাডমিন হিসেবে ঢুকুন",
         src: SHOT.login,
         alt: "ইমেইল, পাসওয়ার্ড ও Google দিয়ে অ্যাডমিন লগইন",
         kind: "phone",
         steps: [
-          "টিভিতে Admin চাপুন, অথবা ফোনে একই অ্যাপ ইনস্টল করে Admin sign in খুলুন।",
-          "ইমেইল-পাসওয়ার্ড বা Continue with Google দিয়ে সাইন ইন করুন।",
-          "অ্যাক্সেস লাগলে Register here। সাইন ইন না গেলে Forgot password ব্যবহার করুন।",
+          "টিভিতে Admin চাপুন, অথবা ফোনে একই অ্যাপ খুলে অ্যাডমিন লগইন করুন।",
+          "ইমেইল-পাসওয়ার্ড দিয়ে ঢুকুন, অথবা Continue with Google চাপুন।",
+          "অ্যাকাউন্ট না থাকলে Register here। পাসওয়ার্ড ভুলে গেলে Forgot password ব্যবহার করুন।",
         ],
       },
       {
-        title: "৩. স্ক্রিন পেয়ার ও পরিচালনা",
+        title: "৩. স্ক্রিন জোড়া লাগান ও দেখভাল করুন",
         src: SHOT.screens,
-        alt: "অনলাইন স্ট্যাটাস ও গিয়ার সেটিংসসহ অ্যাডমিন প্যানেল স্ক্রিন তালিকা",
+        alt: "অনলাইন অবস্থা ও গিয়ার সেটিংসসহ অ্যাডমিন প্যানেল স্ক্রিন তালিকা",
         kind: "phone",
         steps: [
-          "লগইনের পর Admin Panel → Screens। প্রতিটি কার্ড একটি টিভি (নাম, অনলাইন/অফলাইন, ভার্সন)।",
-          "স্ট্যাটাস রিফ্রেশ করতে Check Online চাপুন। স্ক্রিন ম্যানেজ করতে গিয়ার আইকনে চাপুন। নতুন স্ক্রিন যোগ করতে + চাপুন।",
-          "ফোন থেকে টিভির কিউআর স্ক্যান করুন, অথবা পেয়ারিং কোড টাইপ করুন — টিভি একটি স্ক্রিনের সাথে যুক্ত হবে (যেমন মেইন হল)।",
+          "লগইনের পর Admin Panel → Screens খুলবে। প্রতিটি কার্ড একটা টিভি—নাম, অনলাইন/অফলাইন, ভার্সন।",
+          "অবস্থা হালনাগাদ করতে Check Online চাপুন। কোনো স্ক্রিন দেখভাল করতে গিয়ার আইকনে চাপুন। নতুন স্ক্রিন যোগ করতে + চাপুন।",
+          "ফোন থেকে টিভির কিউআর স্ক্যান করুন, অথবা কোড টাইপ করুন। তাতে টিভি একটি স্ক্রিনের সাথে যুক্ত হবে, যেমন মেইন হল।",
         ],
       },
       {
-        title: "৪. জামাতের সময় সেট করুন",
+        title: "৪. জামাতের সময় দিন",
         src: SHOT.jamaat,
-        alt: "ওয়াক্ত রেঞ্জ ও সোনালি জামাত সময় বাটনসহ জামাত এডিটর",
+        alt: "ওয়াক্তের সময়সীমা ও সোনালি জামাত সময় বাটনসহ জামাত এডিটর",
         kind: "phone",
         steps: [
-          "Jamaat ট্যাব খুলুন। প্রতি নামাজে ওয়াক্তের উইন্ডো দেখায় (যেমন ফজর ৪:২১ AM – ৫:৩৯ AM)।",
-          "জামাতের সময় সেট করতে সোনালি সময়ের বাটনে চাপুন। প্রয়োজনে নোট যোগ করুন।",
-          "Save Jamaat Times চাপুন। টিভির টেবিল সাথে সাথে আপডেট হয়।",
+          "Jamaat ট্যাব খুলুন। প্রতি নামাজের ওয়াক্ত দেখা যায়, যেমন ফজর ৪:২১ AM – ৫:৩৯ AM।",
+          "সোনালি সময়ের বাটনে চেপে জামাতের সময় দিন। চাইলে নোটও যোগ করতে পারেন।",
+          "Save Jamaat Times চাপুন। টিভির তালিকা সাথে সাথে বদলে যায়।",
         ],
       },
       {
-        title: "৫. হাদিস পরিচালনা",
+        title: "৫. হাদিস রাখুন",
         src: SHOT.hadith,
-        alt: "ঘূর্ণন সেকেন্ড ও লুকান/এডিট/ডিলিটসহ হাদিস স্ক্রিন",
+        alt: "ঘূর্ণন সেকেন্ড ও লুকান/সম্পাদনা/মুছুনসহ হাদিস স্ক্রিন",
         kind: "phone",
         steps: [
-          "Hadith ট্যাব খুলুন। Rotation (seconds) সেট করুন — যেমন ৩০ — তারপর Save।",
-          "নতুন হাদিস যোগ করতে + চাপুন (টেক্সট ও সূত্র)। চোখ দিয়ে টিভি থেকে লুকান, পেন্সিল দিয়ে এডিট, ট্র্যাশ দিয়ে মুছুন।",
+          "Hadith ট্যাব খুলুন। কত সেকেন্ড পর পর ঘুরবে সেট করুন—যেমন ৩০—তারপর Save চাপুন।",
+          "নতুন হাদিস যোগ করতে + চাপুন (লেখা ও সূত্র)। চোখের আইকনে চেপে টিভি থেকে লুকান, পেন্সিল দিয়ে সম্পাদনা, ডাস্টবিন দিয়ে মুছুন।",
         ],
       },
       {
-        title: "৬. নোটিশ যোগ করুন",
+        title: "৬. নোটিশ দিন",
         src: SHOT.notices,
-        alt: "ঘোষণা কার্ড ও অ্যাড বাটনসহ নোটিশ স্ক্রিন",
+        alt: "ঘোষণার কার্ড ও যোগ বাটনসহ নোটিশ স্ক্রিন",
         kind: "phone",
         steps: [
-          "Notices ট্যাব খুলুন। টিভির টিকারের জন্য স্ক্রলিং ঘোষণা যোগ করতে + চাপুন।",
-          "কার্ড থেকে নোটিশ লুকান বা মুছুন। প্রায়োরিটি ট্যাগ (যেমন P0) ডিসপ্লের ক্রম নিয়ন্ত্রণ করে।",
+          "Notices ট্যাব খুলুন। টিভির নিচে চলমান ঘোষণা যোগ করতে + চাপুন।",
+          "কার্ড থেকে নোটিশ লুকান বা মুছুন। P0-এর মতো ট্যাগ দিয়ে কোনটা আগে দেখাবে সেটা ঠিক হয়।",
         ],
       },
       {
@@ -394,113 +445,112 @@ const copy: Record<Lang, Copy> = {
         alt: "ডিসপ্লে ভাষা বাংলা, জামাত কাউন্টডাউন ও হিজরি তারিখ সমন্বয়সহ সেটিংস",
         kind: "phone",
         steps: [
-          "Settings খুলুন। Display Language বেছে নিন: English বা বাংলা। এই ভাষা টিভি এবং পাবলিক ফোন ভিউয়ারে ব্যবহৃত হয়।",
-          "জামাত কাউন্টডাউন কখন দেখাবে সেট করুন (যেমন জামাতের ৩ মিনিট আগে)।",
-          "চাঁদ দেখা ভিন্ন হলে হিজরি তারিখ সমন্বয় করুন। টিভির কলাম চওড়া করতে স্লাইডার ব্যবহার করুন। Save Settings চাপুন।",
+          "Settings খুলুন। Display Language থেকে English বা বাংলা বেছে নিন। এই ভাষা টিভি আর ফোনের পাবলিক ভিউ—দুই জায়গাতেই চলে।",
+          "জামাতের কতক্ষণ আগে কাউন্টডাউন দেখাবে সেট করুন, যেমন ৩ মিনিট আগে।",
+          "চাঁদ দেখা আলাদা হলে হিজরি তারিখ এদিক-ওদিক করতে পারেন। কলামের চওড়া বদলাতে স্লাইডার টানুন। শেষে Save Settings চাপুন।",
         ],
       },
       {
-        title: "৮. মুসল্লিদের সাথে শেয়ার",
+        title: "৮. মুসল্লিদের সাথে শেয়ার করুন",
         src: SHOT.share,
         alt: "পাবলিক ভিউ চালু — কিউআর, লিংক কপি, শেয়ার, কিউআর ডাউনলোড ও নতুন কিউআর",
         kind: "phone",
         steps: [
           "স্ক্রিনের Share ট্যাব খুলুন। Enable public view চালু করুন।",
-          "লিংক থাকলে যে কেউ ফোনে এই স্ক্রিন দেখতে পারবেন। Copy link, Share link বা Download QR ব্যবহার করুন।",
+          "লিংক থাকলে যে কেউ ফোনে এই পর্দা দেখতে পারবেন। Copy link, Share link বা Download QR ব্যবহার করুন।",
           "পুরনো লিংক ফাঁস হলে New QR / link চাপুন। শেয়ার বন্ধ করতে Revoke link permanently চাপুন।",
         ],
       },
     ],
     docsTitle: "ডকুমেন্টেশন",
     docsIntro:
-      "মসজিদ ডিসপ্লে ও অ্যাডমিন অ্যাপের প্রতিটি অংশ কী করে। ইংরেজিতে পড়তে উপরে English চাপুন।",
+      "মসজিদের পর্দা আর অ্যাডমিন অ্যাপের প্রতিটি অংশ কী করে। ইংরেজিতে পড়তে উপরে English চাপুন।",
     docs: [
       {
-        title: "নামাজের ডিসপ্লে",
+        title: "নামাজের পর্দা",
         src: SHOT.display,
-        alt: "হিজরি ও গ্রেগরিয়ান তারিখ, ঘড়ি, সূর্যের সময়, বর্তমান ওয়াক্ত, নামাজের টেবিল, হাদিস ও নোটিশসহ লাইভ ডিসপ্লে",
+        alt: "হিজরি ও ইংরেজি তারিখ, ঘড়ি, সূর্যের সময়, চলতি ওয়াক্ত, নামাজের তালিকা, হাদিস ও নোটিশসহ লাইভ পর্দা",
         kind: "wide",
-        text: "টিভিতে এই স্ক্রিনই থাকে। হেডার: হিজরি তারিখ, গ্রেগরিয়ান তারিখ। বামে: ঘড়ি, সূর্যোদয়, সূর্যাস্ত, সাহরি, ইফতার এবং বর্তমান ওয়াক্ত ও অবশিষ্ট সময়। ডানে: নামাজের টেবিল (শুরু, শেষ, জামাত)। নিচে: ঘুরন্ত হাদিস ও স্ক্রলিং নোটিশ। শুক্রবার জোহর জুম'আ হিসেবে দেখায়।",
+        text: "টিভিতে এই পর্দাই থাকে। উপরে হিজরি ও ইংরেজি তারিখ। বামে ঘড়ি, সূর্যোদয়, সূর্যাস্ত, সাহরি, ইফতার আর চলতি ওয়াক্ত কতক্ষণ বাকি। ডানে নামাজের তালিকা—শুরু, শেষ, জামাত। নিচে হাদিস ঘোরে আর নোটিশ চলে। শুক্রবারে জোহরের জায়গায় জুমআ দেখায়।",
       },
       {
-        title: "জামাত কাউন্টডাউন",
+        title: "জামাতের কাউন্টডাউন",
         src: SHOT.jamaatLive,
-        alt: "ফজরের জামাতের কাউন্টডাউন ও মোবাইল সাইলেন্ট করার অনুস্মারক",
+        alt: "ফজরের জামাতের কাউন্টডাউন ও মোবাইল সাইলেন্ট রাখার অনুরোধ",
         kind: "wide",
-        text: "জামাত কাছে এলে বাম প্যানেলে কাউন্টডাউন আসে (যেমন “ফজরের জামাত শুরু হতে বাকি …”) এবং অনুগ্রহ করে মোবাইল সাইলেন্ট করুন। টেবিলে বর্তমান নামাজ হাইলাইট থাকে। কত মিনিট আগে এটি দেখাবে সেটি Settings-এ সেট করেন।",
+        text: "জামাত কাছে এলে বাম পাশে কাউন্টডাউন আসে, যেমন «ফজরের জামাত শুরু হতে বাকি …» আর মোবাইল সাইলেন্ট রাখার অনুরোধ। তালিকায় চলতি নামাজ হাইলাইট থাকে। কত মিনিট আগে দেখাবে তা Settings থেকে ঠিক করেন।",
       },
       {
         title: "মাকরূহ (নিষিদ্ধ) সময়",
         src: SHOT.makruh,
         alt: "সূর্যাস্তের মাকরূহ সতর্কতা — আসর এখনও আদায় করা যাবে",
         kind: "wide",
-        text: "সূর্যোদয়, যাওয়াল ও সূর্যাস্তের সময় ডিসপ্লে সতর্কতা দেখায়: সেই উইন্ডোতে নামাজ পড়া নিষেধ। সূর্যাস্তে জানায় আজকের আসর নির্ধারিত শেষ সময় পর্যন্ত আদায় করা যাবে। ইশরাক, যাওয়াল ও মাকরূহ সময় টেবিলে ছোট নোট হিসেবেও থাকে।",
+        text: "সূর্যোদয়, যাওয়াল আর সূর্যাস্তের সময় পর্দায় সতর্কতা আসে—এই সময়ে নামাজ পড়া যায় না। সূর্যাস্তে জানিয়ে দেয়, আজকের আসর নির্ধারিত শেষ সময় পর্যন্ত আদায় করা যাবে। ইশরাক, যাওয়াল ও মাকরূহ সময় তালিকায় ছোট করেও লেখা থাকে।",
       },
       {
         title: "কানেক্ট স্ক্রিন",
         src: SHOT.connect,
-        alt: "আনপেয়ারড টিভির কানেক্ট স্ক্রিন",
+        alt: "জোড়া না লাগানো টিভির কানেক্ট স্ক্রিন",
         kind: "wide",
-        text: "প্রথম চালুতে (বা আনপেয়ারের পর) Connect Screen। তিনভাবে ঢোকা যায়: অ্যাডমিন কিউআর স্ক্যান, পেয়ারিং কোড টাইপ, অথবা Connect my Masjid দিয়ে পাবলিক শেয়ার। এই স্ক্রিনের Admin পেয়ার ছাড়াই সাইন ইন করে।",
+        text: "প্রথমবার চালু করলে (বা জোড়া খুলে দিলে) Connect Screen আসে। তিনভাবে ঢোকা যায়—অ্যাডমিন কিউআর স্ক্যান করবেন, কেউ কোড টাইপ করবেন, অথবা Connect my Masjid দিয়ে পাবলিক লিংক খুলবেন। এখানকার Admin বাটন জোড়া না লাগিয়েই লগইন করে।",
       },
       {
-        title: "অ্যাডমিন সাইন-ইন",
+        title: "অ্যাডমিন লগইন",
         src: SHOT.login,
         alt: "অ্যাডমিন লগইন স্ক্রিন",
         kind: "phone",
-        text: "টিভির মতো একই অ্যাপ। ইমেইল/পাসওয়ার্ড বা Google। শুধু সাইন-ইন করা অ্যাডমিন কনটেন্ট বদলাতে পারেন। এই স্ক্রিনে গোপনীয়তা নীতির লিংক আছে।",
+        text: "টিভির মতোই একই অ্যাপ। ইমেইল-পাসওয়ার্ড বা গুগল দিয়ে ঢোকা যায়। শুধু লগইন করা অ্যাডমিন সময় ও নোটিশ বদলাতে পারেন। এই পর্দায় গোপনীয়তা নীতির লিংকও আছে।",
       },
       {
-        title: "স্ক্রিন তালিকা",
+        title: "স্ক্রিনের তালিকা",
         src: SHOT.screens,
-        alt: "পেয়ার করা স্ক্রিনের অ্যাডমিন প্যানেল তালিকা",
+        alt: "জোড়া লাগানো স্ক্রিনের অ্যাডমিন প্যানেল তালিকা",
         kind: "phone",
-        text: "সুপার অ্যাডমিন সব টিভি, অনলাইন স্ট্যাটাস, শেষ দেখা এবং অ্যাপ ভার্সন দেখেন। গিয়ার সেই স্ক্রিনের Jamaat / Hadith / Notices / Settings / Share ট্যাব খোলে। Users, Groups ও Global অ্যাকাউন্ট ও মসজিদ-ব্যাপী সেটিংসের জন্য।",
+        text: "সুপার অ্যাডমিন সব টিভি দেখেন—অনলাইন আছে কি না, শেষ কবে দেখা গেছে, অ্যাপের ভার্সন কত। গিয়ার চাপলে সেই স্ক্রিনের Jamaat, Hadith, Notices, Settings আর Share ট্যাব খোলে। Users, Groups আর Global দিয়ে অ্যাকাউন্ট ও পুরো মসজিদের সেটিংস হয়।",
       },
       {
         title: "জামাত এডিটর",
         src: SHOT.jamaat,
         alt: "জামাত সময় এডিটর",
         kind: "phone",
-        text: "ওয়াক্ত ডিভাইসেই হিসাব হয় — সেটিংসের স্থানাঙ্ক ও পদ্ধতি থেকে (জিপিএস নয়)। জামাতের সময় আপনি যা টাইপ করেন। ঐচ্ছিক নোট টিভিতে দেখা যেতে পারে। Save ক্লাউডে লেখে; ডিসপ্লে রিয়েল টাইমে আপডেট হয় এবং প্রথম সিঙ্কের পর অফলাইনেও চলে।",
+        text: "ওয়াক্ত অ্যাপেই হিসাব হয়—সেটিংসে দেওয়া স্থান ও নিয়ম অনুসারে, জিপিএস লাগে না। জামাতের সময় আপনি যা দেবেন তাই। চাইলে নোট টিভিতেও দেখা যায়। Save চাপলে ক্লাউডে যায়; পর্দা সাথে সাথে বদলায়, আর একবার সিঙ্ক হলে ইন্টারনেট ছাড়াও চলে।",
       },
       {
         title: "হাদিস",
         src: SHOT.hadith,
         alt: "হাদিস ম্যানেজার",
         kind: "phone",
-        text: "আপনার সেট করা বিরতিতে টিভিতে হাদিস ঘোরে। মুছে না ফেলে লুকাতে পারেন। টেক্সট ইংরেজি বা বাংলা — ডিসপ্লে যা লিখেছেন তাই দেখায়।",
+        text: "আপনি যত সেকেন্ড ধরবেন, ততক্ষণ পর পর টিভিতে হাদিস বদলায়। মুছে না ফেলে শুধু লুকিয়ে রাখা যায়। ইংরেজি বা বাংলা যা লিখবেন, পর্দায় তাই দেখাবে।",
       },
       {
         title: "নোটিশ",
         src: SHOT.notices,
         alt: "নোটিশ ম্যানেজার",
         kind: "phone",
-        text: "নোটিশ টিভির নিচে স্ক্রল করে। এই ট্যাব থেকে যোগ, লুকান বা মুছুন। টিকারে পড়ার সুবিধায় সংক্ষিপ্ত রাখুন।",
+        text: "নোটিশ টিভির নিচে চলে। এই ট্যাব থেকে যোগ করুন, লুকান বা মুছুন। যাতে সহজে পড়া যায়, ছোট করে লিখুন।",
       },
       {
         title: "ভাষা ও লেআউট",
         src: SHOT.language,
         alt: "ভাষা, কাউন্টডাউন, হিজরি অফসেট ও লেআউটের সেটিংস",
         kind: "phone",
-        text: "Display Language পুরো টিভি (ও পাবলিক ভিউয়ার) ইংরেজি ও বাংলার মধ্যে বদলায় — তারিখ ও সংখ্যাসহ। জামাত কাউন্টডাউন, হিজরি ± দিন এবং কলামের চওড়া এখানে। Reset layout to default আগের স্প্লিট ফেরায়।",
+        text: "Display Language দিয়ে পুরো টিভি আর পাবলিক ভিউ ইংরেজি বা বাংলায় যায়—তারিখ ও সংখ্যাসহ। জামাতের কাউন্টডাউন, হিজরি কয়েকদিন এদিক-ওদিক আর কলামের চওড়া এখান থেকেই। আগের মাপে ফিরতে Reset layout to default চাপুন।",
       },
       {
-        title: "পাবলিক ভিউয়ার",
+        title: "পাবলিক ভিউ",
         src: SHOT.share,
         alt: "পাবলিক ভিউ কিউআর ও লিংক",
         kind: "phone",
-        text: "শেয়ার ইউআরএল মসজিদ আইডি নয়। ফোনে ঘড়ি ও নামাজের সময় আপডেট হয়; আপনি সেভ করলে কনটেন্ট রিফ্রেশ হয়। New QR পুরনো লিংক বাতিল করে। ভিউয়াররা টিভির হার্টবিট ডকুমেন্ট শোনে না, তাই অনেক ফোনেও Firebase খরচ বাড়ে না।",
+        text: "শেয়ার লিংকটা মসজিদের আইডি নয়। ফোনে ঘড়ি ও নামাজের সময় চলতে থাকে; আপনি সেভ করলে নতুন তথ্য আসে। New QR চাপলে পুরনো লিংক আর খুলবে না। অনেকজন ফোনে খুললেও খরচ খুব একটা বাড়ে না।",
       },
       {
-        title: "প্রয়োজনীয়তা",
+        title: "কী লাগবে",
         src: SHOT.banner,
-        alt: "MasjidScreen মসজিদ টিভি ডিসপ্লে ব্যানার",
+        alt: "MasjidScreen মসজিদের টিভি পর্দার ব্যানার",
         kind: "wide",
-        text: "Android 8.0 (API 26) বা নতুন। মসজিদ স্ক্রিনের জন্য ল্যান্ডস্কেপ ট্যাবলেট, টিভি বক্স বা মনিটর ভালো। অ্যাডমিন ফোনে চলে। প্রথম সিঙ্কের পর ইন্টারনেট ছাড়াই ঘড়ি, ওয়াক্ত ও কাউন্টডাউন চলে।",
+        text: "অ্যান্ড্রয়েড ৮.০ বা তার নতুন লাগবে। মসজিদের পর্দার জন্য আড়াআড়ি ট্যাবলেট, টিভি বক্স বা মনিটর ভালো। অ্যাডমিন ফোনেই চলে। একবার সিঙ্ক হয়ে গেলে ইন্টারনেট না থাকলেও ঘড়ি, ওয়াক্ত আর কাউন্টডাউন চলতে থাকে।",
       },
     ],
-    fullDocs: "টেকনিক্যাল ডকুমেন্টেশন",
     privacy: "গোপনীয়তা নীতি",
     github: "GitHub",
     footer: "MasjidScreen · mosque.mirazanik.com",
@@ -536,6 +586,130 @@ function stepsList(items: readonly string[]): string {
   return `<ol class="how-steps">${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>`;
 }
 
+function landscapeCarousel(t: Copy): string {
+  const slides = LANDSCAPE_SLIDES.map((slide, index) => {
+    const meta = t.carouselSlides[index] ?? { alt: "", caption: "" };
+    return `
+      <figure class="carousel-slide${index === 0 ? " is-active" : ""}" data-slide="${index}">
+        <img src="${escapeHtml(slide.src)}" alt="${escapeHtml(meta.alt)}" draggable="false" ${index === 0 ? "" : 'loading="lazy"'} />
+      </figure>`;
+  }).join("");
+
+  const dots = t.carouselSlides
+    .map(
+      (meta, index) =>
+        `<button type="button" class="carousel-dot${index === 0 ? " is-active" : ""}" data-goto="${index}" aria-label="${escapeHtml(meta.caption)}"></button>`
+    )
+    .join("");
+
+  return `
+    <div class="hero-carousel" data-carousel aria-roledescription="carousel">
+      <div class="carousel-frame">
+        <div class="carousel-track">
+          ${slides}
+        </div>
+        <button type="button" class="carousel-btn carousel-prev" data-carousel-prev aria-label="${escapeHtml(t.carouselPrev)}">‹</button>
+        <button type="button" class="carousel-btn carousel-next" data-carousel-next aria-label="${escapeHtml(t.carouselNext)}">›</button>
+      </div>
+      <p class="carousel-caption" data-carousel-caption aria-live="polite">${escapeHtml(t.carouselSlides[0]?.caption ?? "")}</p>
+      <div class="carousel-dots" role="tablist">${dots}</div>
+    </div>
+  `;
+}
+
+function bindCarousel(root: HTMLElement): () => void {
+  const el = root.querySelector<HTMLElement>("[data-carousel]");
+  const track = el?.querySelector<HTMLElement>(".carousel-track");
+  if (!el || !track) return () => undefined;
+
+  const slides = [...el.querySelectorAll<HTMLElement>("[data-slide]")];
+  const dots = [...el.querySelectorAll<HTMLButtonElement>("[data-goto]")];
+  const caption = el.querySelector<HTMLElement>("[data-carousel-caption]");
+  const captions = dots.map((dot) => dot.getAttribute("aria-label") ?? "");
+  const total = slides.length;
+  let index = 0;
+  let timer: number | null = null;
+  let pointerId: number | null = null;
+  let startX = 0;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const go = (next: number) => {
+    index = (next + total) % total;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    slides.forEach((slide, i) => slide.classList.toggle("is-active", i === index));
+    dots.forEach((dot, i) => {
+      dot.classList.toggle("is-active", i === index);
+      dot.setAttribute("aria-selected", i === index ? "true" : "false");
+    });
+    if (caption) caption.textContent = captions[index] ?? "";
+  };
+
+  const stop = () => {
+    if (timer != null) window.clearInterval(timer);
+    timer = null;
+  };
+
+  const play = () => {
+    stop();
+    if (reduceMotion || total < 2) return;
+    timer = window.setInterval(() => go(index + 1), 5000);
+  };
+
+  const onPrev = () => {
+    go(index - 1);
+    play();
+  };
+  const onNext = () => {
+    go(index + 1);
+    play();
+  };
+
+  el.querySelector("[data-carousel-prev]")?.addEventListener("click", onPrev);
+  el.querySelector("[data-carousel-next]")?.addEventListener("click", onNext);
+  dots.forEach((dot) => {
+    dot.addEventListener("click", () => {
+      go(Number(dot.dataset.goto));
+      play();
+    });
+  });
+
+  const onPointerDown = (event: PointerEvent) => {
+    pointerId = event.pointerId;
+    startX = event.clientX;
+    track.setPointerCapture(event.pointerId);
+    stop();
+  };
+  const onPointerUp = (event: PointerEvent) => {
+    if (pointerId !== event.pointerId) return;
+    pointerId = null;
+    const delta = event.clientX - startX;
+    if (delta > 40) go(index - 1);
+    else if (delta < -40) go(index + 1);
+    play();
+  };
+
+  track.addEventListener("pointerdown", onPointerDown);
+  track.addEventListener("pointerup", onPointerUp);
+  track.addEventListener("pointercancel", onPointerUp);
+  el.addEventListener("mouseenter", stop);
+  el.addEventListener("mouseleave", play);
+  el.addEventListener("focusin", stop);
+  el.addEventListener("focusout", play);
+
+  const onVisibility = () => {
+    if (document.hidden) stop();
+    else play();
+  };
+  document.addEventListener("visibilitychange", onVisibility);
+
+  play();
+
+  return () => {
+    stop();
+    document.removeEventListener("visibilitychange", onVisibility);
+  };
+}
+
 function renderBody(lang: Lang, lastSharePath: string | null): string {
   const t = copy[lang];
   const continueCard = lastSharePath
@@ -567,23 +741,9 @@ function renderBody(lang: Lang, lastSharePath: string | null): string {
       ${continueCard}
     </header>
 
-    ${shot(SHOT.banner, lang === "bn" ? "MasjidScreen মসজিদ টিভি ডিসপ্লে" : "MasjidScreen mosque TV display", "wide", "hero-shot")}
+    ${landscapeCarousel(t)}
 
-    <section class="landing-section">
-      <h2>${escapeHtml(t.whatTitle)}</h2>
-      <div class="feature-grid">
-        ${t.whatItems
-          .map(
-            (item) => `
-          <article class="feature-card">
-            ${shot(item.src, item.alt, item.kind)}
-            <h3>${escapeHtml(item.title)}</h3>
-            <p>${escapeHtml(item.text)}</p>
-          </article>`
-          )
-          .join("")}
-      </div>
-    </section>
+    
 
     <section class="landing-section" id="how-to">
       <h2>${escapeHtml(t.howTitle)}</h2>
@@ -622,7 +782,6 @@ function renderBody(lang: Lang, lastSharePath: string | null): string {
           .join("")}
       </div>
       <div class="doc-links">
-        <a href="${DOCS_URL}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.fullDocs)}</a>
         <a href="${PRIVACY_URL}" target="_blank" rel="noopener noreferrer">${escapeHtml(t.privacy)}</a>
         <a href="https://github.com/mirazanik/masjid-screen" target="_blank" rel="noopener noreferrer">${escapeHtml(t.github)}</a>
       </div>
@@ -650,12 +809,15 @@ export function renderLanding(
   const stored = localStorage.getItem("ms-landing-lang");
   let lang: Lang = stored === "bn" ? "bn" : "en";
   document.documentElement.lang = lang;
+  let stopCarousel: (() => void) | null = null;
 
   const paint = () => {
     const y = window.scrollY;
+    stopCarousel?.();
     root.innerHTML = `<div class="landing">${renderBody(lang, options.lastSharePath ?? null)}</div>`;
     document.documentElement.lang = lang;
     document.documentElement.dir = "ltr";
+    stopCarousel = bindCarousel(root);
     root.querySelector("#langToggle")?.addEventListener("click", () => {
       lang = lang === "en" ? "bn" : "en";
       localStorage.setItem("ms-landing-lang", lang);
